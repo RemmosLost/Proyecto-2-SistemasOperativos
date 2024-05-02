@@ -8,7 +8,7 @@ package com.mycompany.proyecto2.so.Model;
  *
  * @author rebecamadrigal
  */
-public class Pagina {
+public class Page {
     
     
     
