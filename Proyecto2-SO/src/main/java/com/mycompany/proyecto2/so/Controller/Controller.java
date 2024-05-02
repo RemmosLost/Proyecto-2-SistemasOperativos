@@ -1,12 +1,12 @@
 
 
-package com.mycompany.proyecto2.so;
+package com.mycompany.proyecto2.so.Controller;
 
 /**
  *
  * @author rebecamadrigal
  */
-public class Proyecto2SO {
+public class Controller {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");
