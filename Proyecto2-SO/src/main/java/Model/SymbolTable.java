@@ -21,14 +21,40 @@ public class SymbolTable {
    }
    
    public void addPageToPointer(int ptr, int pageId){
-       System.out.println("AAAAA" + ptr + "BBBB"+ pageId);
+       //System.out.println("AAAAA" + ptr + "BBBB"+ pageId);
        symbolTable.get(ptr).add(pageId);
        
    }
    
-   public void removePointer(int ptr){
+   public ArrayList<Integer> getPointerPages(int ptr){
        
-    
+     ArrayList<Integer> pages = symbolTable.get(ptr);
+     //Hay que generar un error si el puntero aún no está en la tabla**
+     //System.out.println("Paginas asociadas al puntero " + ptr + ": " + pages);  
+     return pages;
+       
+       
+   }
+   
+   
+   
+   
+   
+   
+   
+   public void removePointerPages(int ptr){
+       /*
+        Función que elimina todas las páginas de un puntero.
+        Entradas: ptr = puntero de páginas.
+        Salidas: N/A
+        Restricciones: N/A
+        */
+       System.out.println("Se van a remover las páginas del puntero: " + ptr);
+       symbolTable.remove(ptr);                                                     //Remueve totalmente las páginas y el puntero
+       
+       
+       
+       
    }
     
     
@@ -50,6 +76,9 @@ public class SymbolTable {
             for (int i = 0; i < value.size(); i++) {
                 System.out.println("  Pagina " + value.get(i));
             }
+            
+            
+            
         }
     }
     

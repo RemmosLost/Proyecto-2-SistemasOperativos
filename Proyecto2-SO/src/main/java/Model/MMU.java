@@ -11,6 +11,7 @@ public class MMU {
     private int pageCounter;
     private int currentPtr;
     private ArrayList<Page> realMemory;                        
+    private Integer[] realMemory2;                          //Indica qué paginas están en memoria real
     //private Page[] realMemory2;
     private ArrayList<Process> processes;                   //Guarda los procesos que están existiendo actualemente (No necesariamente ejecutándose)
     private SymbolTable symbolTable;                        //Guarda punteros y su lista de páginas          
@@ -25,7 +26,11 @@ public class MMU {
         this.symbolTable = new SymbolTable();
         this.memoryMap = new HashMap<>(); 
         
-        //this.realMemory2 = new Page[100];
+        this.realMemory2 = new Integer[100];            //Se inicializan los valroes de la memoria real en 0
+        for (int i = 0; i < realMemory2.length; i++) {
+            realMemory2[i] = 0;
+        }
+        
     }
 
    /*Hacer Getters y Setters****   */
@@ -50,8 +55,7 @@ public class MMU {
             System.out.println("Error: No se puede asignar más de 100 pgs a un proceso");       
             //Debe crearse otro error si se supera la memoria aunque la cantidad de páginas si sea menor que 100?       
         }else{         
-            if(!memoryMap.containsKey(pid)){                                 //Si el proceso aún no está en la tabla de memoria, entonces se crea uno nuevo   
-                System.out.println("Aqui voy");
+            if(!memoryMap.containsKey(pid)){                                 //Si el proceso aún no está en la tabla de memoria, entonces se crea uno nuevo     
                 actualProcess = new Process(pid); 
                 //System.out.println("PTR = " + actualProcess.getPtr());
                 processes.add(actualProcess);                               //Se añade el Proceso a la Lista de Procesos
@@ -65,8 +69,7 @@ public class MMU {
             }else{                                                          //Sino, se buscan sus datos, el proceso está pidiendo más memoria
                 //System.out.println("Proceso " + Integer.toString(pid) + " Solicito mas memoria");
                 for(Process p : processes) { 
-                    if(p.getProcessID() == pid) { 
-                        System.out.println("Goku");
+                    if(p.getProcessID() == pid) {                        
                         actualProcess = p;
                         System.out.println("Puntero Actual= " + currentPtr);
                         memoryMap.get(pid).add(currentPtr);                         //Se asigna el puntero actual al Proceso "X" en el mapa de memoria
@@ -82,14 +85,119 @@ public class MMU {
                     createPage(currentPtr, actualProcess);  
                 }
             }
-            
-            
-            
          }
         currentPtr++;
     }
     
-public void createPage(int ptr, Process p){
+    
+    
+    public void useInstruction(int ptr){
+        /*Función que asigna las páginas de un puntero a memoria real .
+        Entradas: ptr = puntero de páginas.
+        Salidas: N/A
+        Restricciones: N/A
+    
+        NOTA: Podría variar de acuerdo al algoritmo
+        */
+        ArrayList<Integer> pages = symbolTable.getPointerPages(ptr);        
+        
+       /* for(int i = 0; i < pages.size(); i++){
+            //System.out.println("USE" + ptr + "MMU PAGES= " + pages.get(i));
+            //Se debe asignar cada página a memoria real
+            
+            //Hacer si es Optimal
+            
+            //Hacer si es FIFO
+            
+            //Hacer si es Sencond Chance
+            
+            //Hacer si es LRU o MRU                    
+        }*/
+    }
+    
+    
+    public void deleteInstruction(int ptr){
+        /*Función que elimina las páginas de un puntero.
+        Entradas: ptr = Puntero de páginas.
+        Salidas: N/A
+        Restricciones: N/A
+    
+        NOTA: Podría variar de acuerdo al algoritmo
+        */
+        
+        
+        //printMemoryMap(); 
+        //printSymbolTable();
+        
+        symbolTable.removePointerPages(ptr);                                    //Remueve totalmente las páginas y el puntero de la tabla de símbolos
+        //ArrayList<Integer> values = memoryMap.get(ptr);                       //Se está buscando por PTR, debe ser por PID!!!!!!!!
+        
+        
+        //Hay que buscar en cada llave cuál contiene el ptr, y luego borrar el ptr
+        Integer pidKey = null;      
+        for(Map.Entry<Integer, ArrayList<Integer>> entry : memoryMap.entrySet()){
+           ArrayList<Integer> ptrList = entry.getValue();
+           
+           if(ptrList.contains(ptr)){                                                   //Si un Proceso del Mapa de Memoria contiene el puntero    
+              pidKey = entry.getKey();                                                  //Se obtiene el PID del iterador
+              //ArrayList<Integer> ptrList = memoryMap.get(pidKey);                       //Se obtiene la lista de punteros del PID
+              System.out.println("PROCESS ID = "+ pidKey + " VALUES= " + ptrList);
+              ptrList.remove(Integer.valueOf(ptr));                                                                        //Se remueve el ptr de la lista de punteros
+              System.out.println("PROCESS ID = "+ pidKey + " VALUES= " + ptrList);
+              break;
+          }
+        }
+        //memoryMap.remove(pidKey);
+        //symbolTable.removePointerPages(ptr);                                    //Remueve totalmente las páginas y el puntero de la tabla de símbolos
+    
+    }
+    
+    
+    
+    public void killInstruction(int pid){
+        /*Función que elimina un proceso del mapa de memoria y borra sus punteros y las páginas asociadas a ese puntero.
+        Entradas: pid = Id del Proceso a borrar.
+        Salidas: N/A
+        Restricciones: N/A
+    
+        NOTA: Podría variar de acuerdo al algoritmo
+        */
+        
+        ArrayList<Integer> ptrList = memoryMap.get(pid);                                
+        for(Integer i: ptrList){
+            symbolTable.removePointerPages(i);
+            System.out.println("PROCESS ID = "+ pid + " ELIMINATED PAGE= " + i);
+        }
+        memoryMap.remove(pid);
+        System.out.println("REMOVED PID= " + pid);
+        
+        Process processToKill;
+        
+        for(Process p: processes){
+            if(p.getProcessID() == pid){
+                processes.remove(p);
+            }
+        }
+        
+        //processes.remove()
+        //System.out.println("KILL PID= " + pid + " PTRS= "+ ptrList);
+        
+       
+        
+        
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    public void createPage(int ptr, Process p){
         /*
         Función que crea una página nueva para un proceso.
         Entradas: pid = ProcessId, p = Proceso.
@@ -103,7 +211,7 @@ public void createPage(int ptr, Process p){
         Page newPage = new Page();                                          //Se debe crear la página      
         int pageId = newPage.getPageID();                                   //Se obtiene su ID
         
-        System.out.println(pageId);
+        //System.out.println(pageId);
         
         symbolTable.addPageToPointer(ptr,pageId);                           //Asigna la Página al Puntero en la tabla de Símbolos
                                                                             //(Podría cambiarse por el SymbolTable, o tratar el mapa de memoria directamente como el SymbolTable)
@@ -147,6 +255,10 @@ public void createPage(int ptr, Process p){
         */
         
         symbolTable.printMemoryMap();
+        
+        
+        
+        
     }
         
         
