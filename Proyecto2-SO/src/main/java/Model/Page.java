@@ -1,21 +1,20 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.mycompany.proyecto2.so.Model;
+package Model;
 
-/**
- *
- * @author rebecamadrigal
- */
+
 public class Page {
+    private static int pId = 1;   
     private int pageID;
-    private String phyAdress;
+    private String phyAdress;   //Marco de memoria que se le asignó
     private boolean flag;
     private boolean algorithm;
 
-    public Page(int pageID, String phyAdress, boolean flag, boolean algorithm) {
-        this.pageID = pageID;
+    public Page() {
+        this.pageID = pId;
+        pId++;
+    }
+    
+    public Page(String phyAdress, boolean flag, boolean algorithm) {
+        this.pageID = pId++;
         this.phyAdress = phyAdress;
         this.flag = flag;
         this.algorithm = algorithm;
