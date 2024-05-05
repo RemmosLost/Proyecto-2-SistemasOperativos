@@ -1,6 +1,8 @@
 package Controller;
 
 import Model.MMU;
+import Model.Computer;
+
 
 import java.io.BufferedReader;
 import java.io.File;  
@@ -14,14 +16,17 @@ public class Controller {
     private Controller controller;
     private boolean pauseFlag;
     private static MMU memory = new MMU();
+    private static Computer simComputer1 = new Computer(1);
+    private static Computer simComputer2 = new Computer(2);
+    
     
 
     public Controller() {
         //this.pauseFlag = pauseFlag;
-
+        this.simComputer1 = new Computer(1);
+        this.simComputer2 = new Computer(2);
+        
     }
-    
-    
     
     
     public static void readInstructions() throws FileNotFoundException, IOException{
@@ -31,6 +36,7 @@ public class Controller {
         Salidas: N/A
         Restricciones: Archivo debe ser un TXT.
         */
+        
         File file = new File("F:\\Ronaldo\\TEC\\Semestre 13 - 2024\\Sistemas Operativos\\Proyectos\\Proyecto 2\\Instructions.txt");     //Cambiar de acuerdo a su máquina
         BufferedReader br = new BufferedReader(new FileReader(file));
         String st;
@@ -59,8 +65,13 @@ public class Controller {
                                 pid = splitRes[0];                              //Toma el primer número antes del paréntesis (Es decir, el Pid del proceso)                   
                                 size = splitRes[1];                             // Toma el número después de la coma (Es decir el Size en Bytes del proceso)
                                 
-                                     
-                                memory.newInstruction(Integer.valueOf(pid), Integer.valueOf(size));        //Se deben convertir ambos valores de Strings a enteros
+                                
+                                //System.out.println("PID:"+ pid);
+                                //System.out.println("Size:"+ size);
+                                if(simComputer1.isReadyFlag() && simComputer2.isReadyFlag()){                
+                                    simComputer1.executeNewInstruction(Integer.valueOf(pid), Integer.valueOf(size));    //Se deben convertir ambos valores de Strings a enteros
+                                    //simComputer2.executeNewInstruction(Integer.valueOf(pid), Integer.valueOf(size));
+                                }
                         }                     
                         break;
                         
@@ -68,11 +79,12 @@ public class Controller {
                         
                         ptr = res[1];
                         //System.out.println("Use PTR = " + ptr);
-                        memory.useInstruction(Integer.valueOf(ptr));
-                        
+                        if(simComputer1.isReadyFlag() && simComputer2.isReadyFlag()){
+                            simComputer1.executeUseInstruction(Integer.valueOf(ptr));    //Se deben convertir ambos valores de Strings a enteros
+                            //simComputer2.executeUseInstruction(Integer.valueOf(ptr));
+                        }
                         //System.out.println("Ejecutar instrucción Use");
                         //System.out.println(res[1]);
-                        
                         break;
                         
                         
@@ -81,34 +93,35 @@ public class Controller {
                         //System.out.println("Ejecutar instrucción Delete");
                         //System.out.println(res[1]);
                         ptr = res[1];
-                        memory.deleteInstruction(Integer.valueOf(ptr));
-                        
+                        if(simComputer1.isReadyFlag() && simComputer2.isReadyFlag()){
+                            simComputer1.executeDeleteInstruction(Integer.valueOf(ptr));    //Se deben convertir ambos valores de Strings a enteros
+                            //simComputer2.executeDeleteInstruction(Integer.valueOf(ptr));
+                        }
                         break;
-                    case "kill":    
                         
+                    case "kill":    
                         //System.out.println("Ejecutar instrucción Kill");
                         //System.out.println(res[1]);
-                        pid = res[1];                       
-                        memory.killInstruction(Integer.valueOf(pid));        
-                        
+                        pid = res[1]; 
+                        if(simComputer1.isReadyFlag() && simComputer2.isReadyFlag()){
+                            simComputer1.executeKillInstruction(Integer.valueOf(pid));    //Se deben convertir ambos valores de Strings a enteros
+                            //simComputer2.executeKillInstruction(Integer.valueOf(pid));      
+                        }
                         break;
-                }
-
-                
-                
-                
-                
-                
-              
-                
+                }      
         }   
     }
     
+    public void assignAlgorithm(int alg1, int alg2){
+        simComputer1.setAlgorithm(alg1);
+        //simComputer2.setAlgorithm(alg2);
+       
+    }
     
-    
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {       
         readInstructions();
-        memory.printMemoryMap();
-        memory.printSymbolTable();
+        //simComputer1.printMemoryMap();      
+        //simComputer1.printSymbolTable();
+        //simComputer1.printRealMemory();
     }
 }

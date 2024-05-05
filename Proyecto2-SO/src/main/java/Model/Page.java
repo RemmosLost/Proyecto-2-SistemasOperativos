@@ -2,22 +2,31 @@ package Model;
 
 
 public class Page {
-    private static int pId = 1;   
+    private static int pId = 0;   
     private int pageID;
-    private String phyAdress;   //Marco de memoria que se le asignó
+    private int phyAdress;                  //Marco de memoria que se le asignó
     private boolean flag;
-    private boolean algorithm;
+    
+    
+    //Marking
+    private boolean recent;
+    private boolean secondChance;
+    
 
     public Page() {
         this.pageID = pId;
+        this.phyAdress = -1;                //Indica que empieza estando em memoria virtual VRAM
         pId++;
     }
     
-    public Page(String phyAdress, boolean flag, boolean algorithm) {
+    public Page(int phyAdress, boolean flag, boolean algorithm) {
         this.pageID = pId++;
         this.phyAdress = phyAdress;
         this.flag = flag;
-        this.algorithm = algorithm;
+        
+        this.recent = false;
+        this.secondChance = false;
+        
     }
 
     public int getPageID() {
@@ -28,11 +37,11 @@ public class Page {
         this.pageID = pageID;
     }
 
-    public String getPhyAdress() {
+    public int getPhyAdress() {
         return phyAdress;
     }
 
-    public void setPhyAdress(String phyAdress) {
+    public void setPhyAdress(int phyAdress) {
         this.phyAdress = phyAdress;
     }
 
@@ -44,11 +53,21 @@ public class Page {
         this.flag = flag;
     }
 
-    public boolean isAlgorithm() {
-        return algorithm;
+    public boolean isRecent() {
+        return recent;
     }
 
-    public void setAlgorithm(boolean algorithm) {
-        this.algorithm = algorithm;
+    public void setRecent(boolean recent) {
+        this.recent = recent;
     }
+
+    public boolean isSecondChance() {
+        return secondChance;
+    }
+
+    public void setSecondChance(boolean secondChance) {
+        this.secondChance = secondChance;
+    }
+
+
 }
