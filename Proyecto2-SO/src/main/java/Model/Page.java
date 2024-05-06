@@ -17,6 +17,7 @@ public class Page {
         this.pageID = pId;
         this.phyAdress = -1;                //Indica que empieza estando em memoria virtual VRAM
         pId++;
+        this.secondChance = false;
     }
     
     public Page(int phyAdress, boolean flag, boolean algorithm) {
@@ -29,6 +30,7 @@ public class Page {
         
     }
 
+    
     public int getPageID() {
         return pageID;
     }
@@ -61,13 +63,13 @@ public class Page {
         this.recent = recent;
     }
 
-    public boolean isSecondChance() {
+    public boolean hasSecondChance() {
         return secondChance;
     }
 
     public void setSecondChance(boolean secondChance) {
         this.secondChance = secondChance;
     }
-
+   
 
 }

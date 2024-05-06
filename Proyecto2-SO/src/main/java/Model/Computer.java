@@ -52,6 +52,7 @@ public class Computer {
         this.readyFlag = false;
          memory.useInstruction(ptr);
          this.readyFlag = true;
+         //memory.printRealMemory2();
     }
     
     public void executeDeleteInstruction(int ptr){

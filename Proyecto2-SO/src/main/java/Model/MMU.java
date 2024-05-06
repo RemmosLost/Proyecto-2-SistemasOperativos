@@ -12,7 +12,7 @@ public class MMU {
     //private String instructions;
     private int alg;
     private int currentPtr;
-    private ArrayList<Page> realMemory;                        
+    private ArrayList<Page> pages;                        
     private Integer[] realMemory2;                          //Indica qué paginas están en memoria real
     //private Page[] realMemory2;
     private ArrayList<Process> processes;                   //Guarda los procesos que están existiendo actualemente (No necesariamente ejecutándose)
@@ -25,23 +25,23 @@ public class MMU {
     int firstOut;                       //Si se está usando FIFO, este contador decide qué índice es el que se debe reemplazar
     int mostRecent;                     //Si se está usando MRU, este contador guarda cuál fué la última página que se agregó
 
-    public MMU() {
+    public MMU(/*int algorithm*/) {
         //this.instructions = instructions;
         this.currentPtr = 1;          
         this.processes = new ArrayList<Process>();
-        this.realMemory = new ArrayList<Page>();
+        this.pages = new ArrayList<Page>();
         this.symbolTable = new SymbolTable();
         this.memoryMap = new HashMap<>(); 
         this.VRAM_KB = 0.0;
-        this.alg = 4;
+        this.alg = 2;
         
         this.hits = 0;           
         this.faults = 0;         
         this.firstOut = 0;
         this.mostRecent = -1;
-        this.realMemory2 = new Integer[5];            //Nota, cambiar tamaño de memoria Real devuelta a 100! También se deben cambiar iteradores del arreglo y limite de parametro firstout
+        this.realMemory2 = new Integer[25];            //Nota, cambiar tamaño de memoria Real devuelta a 100! También se deben cambiar iteradores del arreglo y limite de parametro firstout
         Arrays.fill(realMemory2, -1);               //Se inicializan los valroes de la memoria real en -1
-        
+   
     }
 
    /*Hacer Getters y Setters****   */
@@ -182,7 +182,7 @@ public class MMU {
                     System.out.println("----------");
                     for(Integer page: pages){
                             
-                        if(this.firstOut == 5){                       
+                        if(this.firstOut == 25){                       
                             this.firstOut = 0;
                         }
                         
@@ -204,6 +204,9 @@ public class MMU {
                         
                         realMemory2[this.firstOut] = page;          //Caso 3: Reemplezar una página de acuerdo a cuál fue la primera página que entró
                         this.firstOut++; 
+                        this.faults++;                              //Aumenta cantidad de fallos de página
+                        
+                        
                         
                         System.out.println("GOKU+" + this.firstOut);
                         //printRealMemory2();
@@ -212,7 +215,60 @@ public class MMU {
                     
                     break;
                 case 2: //Second Chance
+                    for(Integer page: pages){
+
+                        if(this.firstOut == 25){                       
+                            this.firstOut = 0;
+                        }
+
+                        System.out.println(">>>>Memoria Actual>>>>   FIFO = " + this.firstOut + " ENTRA PAGE "+ page);
+                        printRealMemory2();
+                        System.out.println("<<<<Memoria Actual<<<<");
+
+                        boolean found = false;            
+                        //System.out.println(pages.get(page));
+                        found = searchIfItsPageHit_SC(page,ptr);            //Caso1: Busca si ya está en Memoria Real
+
+                        if(found)                                    //Si se encuentra, se siguen buscando si las demás páginas están
+                          continue;
+
+                        boolean emptyFrame = false;    
+                        emptyFrame = searchIfThereIsSpace(page);    //Caso 2: Busca si hay espacio libre en memoria    
+                        if(emptyFrame)
+                           continue;
+                               
+                        //realMemory2[this.firstOut] = page;          //Caso 3: Reemplezar una página de acuerdo a cuál fue la primera página que entró
+                                                    //Aumenta cantidad de fallos de página
+                                                    
+                        for(Page pg: this.pages){                   //Itera toda la lista de páginas existentes
+                            //System.out.println("+*+*+*+*+* PAGE = " + page + " PageID = " + pg.getPageID());
+                            if(realMemory2[this.firstOut] == pg.getPageID()){             //Si la página en RAM actual está en la lista de páginas existentes    
+                               if(pg.hasSecondChance() == true){
+                                   System.out.println("===== PAGE = " + pg.getPageID() +"Ya tiene vida extra!");
+                                   checkFIFO(); 
+                                   for(Page pag: this.pages){
+                                        checkNextSC(pag);                           //Chequear si el siguiente campo también tiene Second Chance
+                                   }
+                                   realMemory2[this.firstOut+1] = page;
+                                   this.firstOut++;
+                                   pg.setSecondChance(false);
+                                   System.out.println("===== PAGE = " + pg.getPageID() +"Vida Extra Usada");
+                                   
+                                   
+                               }else{
+                                   System.out.println("No hay vidas extra, SE REEEMPLAZA PAGE" + page);
+                                   realMemory2[this.firstOut] = page;
+                               }  
+                            }/*else{
+                                System.out.println("===== PAGE = " + pg.getPageID() +" No Tiene vida extra!");
+                            }  */
+                        }
+                        this.firstOut++;
+                        this.faults++; 
+                        
+                    }
                     break;
+                    
                 case 3: //MRU (Most Recent Used)
                     for(Integer page: pages){
                         
@@ -233,13 +289,14 @@ public class MMU {
                         if(emptyFrame)
                            continue;
                         
-                        for(int i = 0; i < 5; i++){                 //Caso 3: Busca en toda la memoria si la página actual es la más reciente
+                        for(int i = 0; i < 25; i++){                 //Caso 3: Busca en toda la memoria si la página actual es la más reciente
                             if(realMemory2[i] == this.mostRecent){  //Si es la página mas reciente...
                                 realMemory2[i] = page;              //Se asigna la página nueva a su posición.
                             }
                         }
                         
                         this.mostRecent = page;                     //Se actualiza cuál es el nuevo, más reciente
+                        this.faults++;                              //Aumenta cantidad de fallos de página
                     }
                     break;
                 case 4: //Random
@@ -266,15 +323,11 @@ public class MMU {
                            continue;
                         
                         realMemory2[randomNumber] = page;           //cASO 3: Selecciona un marco de página random y cambia su página a la nueva
+                        this.faults++;                              //Aumenta cantidad de fallos de página
+                        
                     }
-                    
-                    
-                    break;
-                    
+                    break;               
         }
-        
-        
-       
     }
     
     
@@ -289,7 +342,7 @@ public class MMU {
 
         symbolTable.removePointerPages(ptr);                                    //Remueve totalmente las páginas y el puntero de la tabla de símbolos
         System.out.println("DELETE PTRS= " + ptr);
-//ArrayList<Integer> values = memoryMap.get(ptr);                       //Se está buscando por PTR, debe ser por PID!!!!!!!!
+        //ArrayList<Integer> values = memoryMap.get(ptr);                       //Se está buscando por PTR, debe ser por PID!!!!!!!!
         
         
         //Hay que buscar en cada llave cuál contiene el ptr, y luego borrar el ptr
@@ -324,6 +377,7 @@ public class MMU {
         
         ArrayList<Integer> ptrList = memoryMap.get(pid); 
         System.out.println("KILL PID= "+ pid+ " LIST= " + ptrList);
+        
         for(Integer i: ptrList){
             symbolTable.removePointerPages(i);
             System.out.println("PROCESS ID = "+ pid + " ELIMINATED PAGE= " + i);
@@ -334,11 +388,7 @@ public class MMU {
         
         //Process processToKill;
         
-       for(Process p: processes){                   //Se elimina el proceso de la lista de procesos existentes
-            if(p.getProcessID() == pid){           
-                this.processes.remove(pid);
-            }
-        }
+       
         
         //processes.remove()
         //System.out.println("KILL PID= " + pid + " PTRS= "+ ptrList);
@@ -367,7 +417,7 @@ public class MMU {
 
         //processes.add(p);                                                 //???- Agrega el nuevo Proceso a la lista de Procesos ejecutándose
 
-        this.realMemory.add(newPage);                                       //Agrega la página a memoria real (Podría quitarse)        
+        this.pages.add(newPage);                                       //Agrega la página a memoria real (Podría quitarse)        
         
         //realMemory[0] = newPage;
                 
@@ -382,16 +432,50 @@ public class MMU {
     public boolean searchIfItsPageHit(Integer p){
         boolean found = false; 
         //System.out.println(pages.get(page));
-        for(int i = 0; i < 5; i++){             //Caso 1: Se le busca si está en memoria Real
+        for(int i = 0; i < 25; i++){             //Caso 1: Se le busca si está en memoria Real
             if(this.realMemory2[i] == p){
                 this.hits++;
                 //CLock +1
                 found = true;                    //Si la encuentra, es un hit de página, Nota: asignar tiempo de reloj +1
                 this.mostRecent = p;
-                System.out.println("Es un HIT!!!");
-                break; 
+                System.out.println("Es un HIT!!!");          
+                break;  
             }
         }
+        return found;
+        //return hits;
+    }
+        
+     public boolean searchIfItsPageHit_SC(Integer p, Integer ptr){
+        boolean found = false; 
+        //System.out.println(pages.get(page));
+        for(int i = 0; i < 25; i++){             //Caso 1: Se le busca si está en memoria Real
+            if(this.realMemory2[i] == p){
+                this.hits++;
+                //CLock +1
+                found = true;                    //Si la encuentra, es un hit de página, Nota: asignar tiempo de reloj +1
+                //this.mostRecent = p;
+                System.out.println("Es un HIT!!!");
+                if(this.alg == 2){              //Si el algoritmo de paginación es Second Chance
+                    ArrayList<Integer> currentPages = this.symbolTable.getPointerPages(ptr);    //Se traen todas las páginas que usará el puntero
+                   // for(Integer page: currentPages){                //Para cáda página de la lista 
+                        for(Page pg: this.pages){                   //Se revisan todas las páginas
+                            if(pg.getPageID() == this.realMemory2[i]){             //Si la página actual está en la lista de páginas existentes    
+                            pg.setSecondChance(true);           //Se le da un Secon Chance, una "vida" extra
+                            System.out.println("Page =" + p + "Vida Extra+1");
+                            }
+                        }
+                            
+                            /*if(pg.hasSecondChance()){
+                                this.firstOut++; 
+                            }*/
+                        //}
+                    //}
+                }
+                break;  
+            }
+        }      
+        
         
         return found;
         //return hits;
@@ -400,7 +484,7 @@ public class MMU {
     
     public boolean searchIfThereIsSpace(Integer p){
         boolean emptyFrame = false;    
-        for(int i = 0; i < 5; i++){               //Caso 2: Se busca por toda memoria Real si hay un espacio vacío, ie, -1
+        for(int i = 0; i < 25; i++){               //Caso 2: Se busca por toda memoria Real si hay un espacio vacío, ie, -1
             if(this.realMemory2[i] == -1){               //Si el campo está vacio  
                 this.realMemory2[i] = p;              //Se agrega la página al espacio vacío
                 //Cambiar estado de Dirección Física de la página actual
@@ -411,7 +495,7 @@ public class MMU {
                 break;
             }   
         }
-        printRealMemory2();
+        //printRealMemory2();
         return emptyFrame;
     }
     
@@ -435,6 +519,25 @@ public class MMU {
         }
     }
     
+   public void checkFIFO(){
+       if(this.firstOut == 24){ 
+            System.out.println("CAMBIA FIFO 24->0 ");
+            this.firstOut = 0;
+      }
+   }
+   
+  public void checkNextSC(Page pg){
+       if(this.firstOut == 24){ 
+            System.out.println("CAMBIA FIFO 24->0 ");
+            this.firstOut = 0;
+       }
+       if(realMemory2[this.firstOut+1] == pg.getPageID()){             //Si la página en RAM actual está en la lista de páginas existentes    
+            if(pg.hasSecondChance() == true){
+                this.firstOut++;
+            }
+       } 
+   }
+    
    public void printSymbolTable(){
         /*
         Función que imprime en consola las páginas que le corresponden a un mismo puntero.
@@ -455,7 +558,7 @@ public class MMU {
          Salidas: N/A
          Restricciones: N/A
          */
-         for(int i = 0; i < 5; i++){
+         for(int i = 0; i < 25; i++){
              System.out.println("Memoria Real, Indice Marco = " + i + " Pagina= " + this.realMemory2[i]);
          }
          
