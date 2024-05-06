@@ -2,6 +2,7 @@ package Controller;
 
 import Model.MMU;
 import Model.Computer;
+import View.SimulationInterface;
 
 
 import java.io.BufferedReader;
@@ -119,9 +120,13 @@ public class Controller {
     }
     
     public static void main(String[] args) throws IOException {       
-        readInstructions();
+        //readInstructions();
         //simComputer1.printMemoryMap();      
         //simComputer1.printSymbolTable();
         //simComputer1.printRealMemory();
+        
+        SimulationInterface simulation = new SimulationInterface();
+        simulation.setVisible(true);
+        simulation.setLocationRelativeTo(null);
     }
 }
