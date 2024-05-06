@@ -326,12 +326,8 @@ public class MMU {
                         this.faults++;                              //Aumenta cantidad de fallos de página
                         
                     }
-                    break;
-                    
+                    break;               
         }
-        
-        
-       
     }
     
     
