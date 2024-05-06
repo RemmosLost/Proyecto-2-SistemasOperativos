@@ -127,14 +127,14 @@ public class Controller {
     
     public static void generateOperationsFile(long randomSeed, String algorithm, int numProcesses, int numOperations, String fileName) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            writer.write("RandomSeed: " + randomSeed);
-            writer.newLine();
-            writer.write("Algorithm: " + algorithm);
-            writer.newLine();
-            writer.write("NumProcesses: " + numProcesses);
-            writer.newLine();
-            writer.write("NumOperations: " + numOperations);
-            writer.newLine();
+            //writer.write("RandomSeed: " + randomSeed);
+            //writer.newLine();
+            //writer.write("Algorithm: " + algorithm);
+            //writer.newLine();
+            //writer.write("NumProcesses: " + numProcesses);
+            //writer.newLine();
+            //writer.write("NumOperations: " + numOperations);
+            //writer.newLine();
             // Inicializar el generador de números aleatorios con la semilla proporcionada
             random = new Random(randomSeed);
             // Generar las operaciones aleatorias y escribirlas en el archivo
