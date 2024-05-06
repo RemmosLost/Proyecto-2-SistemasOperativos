@@ -1,0 +1,137 @@
+package Controller;
+
+import Model.MMU;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Random;
+import java.util.Scanner;
+
+public class Controller {
+
+    private static MMU memory = new MMU();
+
+    public static void main(String[] args) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        int seed = requestSeed(scanner);
+        String algorithm = requestAlgorithm(scanner);
+        String fileName = requestFile(scanner);
+        if (fileName.isEmpty()) {
+            int numProcesses = requestNumProcesses(scanner);
+            int numOperations = requestNumOperations(scanner);
+            fileName = generateOperationsFile(numProcesses, numOperations);
+        }
+        System.out.println("Archivo de operaciones generado: " + fileName);
+        System.out.println("Simulación iniciada.");
+        readInstructions(fileName);
+        memory.printMemoryMap();
+        memory.printSymbolTable();
+    }
+
+    public static void readInstructions(String fileName) throws IOException {
+        File file = new File(fileName);
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String st = scanner.nextLine();
+                String[] res = st.split("[\\\\()]");
+                String instruction = res[0].trim();
+                String argument = res.length > 1 ? res[1].trim() : "";
+                switch (instruction) {
+                    case "new":
+                        String[] splitRes = argument.split(",");
+                        int pid = Integer.parseInt(splitRes[0]);
+                        int size = Integer.parseInt(splitRes[1]);
+                        memory.newInstruction(pid, size);
+                        break;
+                    case "use":
+                        memory.useInstruction(Integer.parseInt(argument));
+                        break;
+                    case "delete":
+                        memory.deleteInstruction(Integer.parseInt(argument));
+                        break;
+                    case "kill":
+                        memory.killInstruction(Integer.parseInt(argument));
+                        break;
+                    default:
+                        System.err.println("Instrucción no reconocida: " + instruction);
+                }
+            }
+        }
+    }
+
+    public static int requestSeed(Scanner scanner) {
+        System.out.print("Ingrese la semilla para el generador de números aleatorios: ");
+        return scanner.nextInt();
+    }
+
+    public static String requestAlgorithm(Scanner scanner) {
+        System.out.print("Ingrese el algoritmo a simular (FIFO, SC, MRU, RND): ");
+        return scanner.nextLine();
+    }
+
+    public static String requestFile(Scanner scanner) {
+        System.out.print("Ingrese el nombre del archivo para simular (deje vacío para generar automáticamente): ");
+        return scanner.nextLine();
+    }
+
+    public static int requestNumProcesses(Scanner scanner) {
+        System.out.print("Ingrese el número de procesos a simular (10, 50, 100): ");
+        return scanner.nextInt();
+    }
+
+    public static int requestNumOperations(Scanner scanner) {
+        System.out.print("Ingrese la cantidad de operaciones (500, 1000, 5000): ");
+        return scanner.nextInt();
+    }
+
+    public static String generateOperationsFile(int numProcesses, int numOperations) throws IOException {
+        String fileName = "Instructions.txt";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            String listOperations = generateListOperations(numProcesses, numOperations);
+            writer.write(listOperations);
+        }
+        return fileName;
+    }
+
+    public static String generateListOperations(int numProcesses, int numOperations) {
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 1; i <= numProcesses; i++) {
+            sb.append("Proceso ").append(i).append(":\n");
+            int numOperationsPerProcess = random.nextInt(numOperations / numProcesses) + 1;
+            int countDelete = 0;
+            boolean killFound = false;
+            for (int j = 0; j < numOperationsPerProcess; j++) {
+                int operation = random.nextInt(4);
+                switch (operation) {
+                    case 0:
+                        if (!killFound) {
+                            sb.append("new(").append(i).append(", x)\n");
+                        }
+                        break;
+                    case 1:
+                        if (!killFound) {
+                            sb.append("use(").append(i).append(")\n");
+                        }
+                        break;
+                    case 2:
+                        if (countDelete == 0 && !killFound) {
+                            sb.append("delete(").append(i).append(")\n");
+                            countDelete++;
+                        }
+                        break;
+                    case 3:
+                        if (!killFound && j == numOperationsPerProcess - 1) {
+                            sb.append("kill(").append(i).append(")\n");
+                            killFound = true;
+                        }
+                        break;
+                }
+            }
+        }
+        return sb.toString();
+    }
+}
+
+
