@@ -15,10 +15,11 @@ public class MMU {
     private ArrayList<Page> pages;                        
     private Integer[] realMemory2;                          //Indica qué paginas están en memoria real
     //private Page[] realMemory2;
-    private ArrayList<Process> processes;                   //Guarda los procesos que están existiendo actualemente (No necesariamente ejecutándose)
+    private ArrayList<Process> processes;                   //Guarda los procesos que están existiendo actualmente (No necesariamente ejecutándose)
     private SymbolTable symbolTable;                        //Guarda punteros y su lista de páginas          
     private Map<Integer, ArrayList<Integer>> memoryMap;     //Guarda Procesos y su lista de punteros
     private double VRAM_KB;
+    private double RAM;
     
     int hits;                           //Lleva la cantidad de Hits de Página totales
     int faults;                         //Lleva la cantidad de Fallos de Página totales
@@ -68,7 +69,11 @@ public class MMU {
     
         */
           
-        int amountPages = (int) size / (4 * 1024);                          //Se calcula la cantidad de páginas que requiere
+        int amountPages = (int) size / (4 * 1024); 
+        
+        this.RAM += size / 1024;
+        
+        //Se calcula la cantidad de páginas que requiere
         Process actualProcess = null;
         System.out.println("NEW PID= "+ pid);       
         System.out.println("Cant paginas a asignar: " + Integer.toString(amountPages));
@@ -565,6 +570,24 @@ public class MMU {
 
 
      }
+    
+    public int totalProcesses(){
+        int total = processes.size();
+        System.out.println("Total de procesos: " + total);
+        return total;
+    }
+
+    public double getRAM() {
+        System.out.println("Total de RAM: " + RAM);
+        return RAM;
+    }
+    
+    public double getRAMPercentage() {
+        System.out.println("Total de RAM%: " + RAM / 100);
+        return RAM / 100;
+    }
+    
+    
         
  
 

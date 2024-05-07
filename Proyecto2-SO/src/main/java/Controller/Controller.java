@@ -22,7 +22,7 @@ public class Controller {
     private Controller controller;
     private static Random random;
     private boolean pauseFlag;
-    private static MMU memory = new MMU();
+    //private static MMU memory = new MMU();
     private static Computer simComputer1 = new Computer(1);
     private static Computer simComputer2 = new Computer(2);
     
@@ -44,7 +44,7 @@ public class Controller {
         Restricciones: Archivo debe ser un TXT.
         */
         
-        File file = new File("F:\\Ronaldo\\TEC\\Semestre 13 - 2024\\Sistemas Operativos\\Proyectos\\Proyecto 2\\Instructions.txt");     //Cambiar de acuerdo a su máquina
+        File file = new File("D:\\Escritorio\\Instructions.txt");     //Cambiar de acuerdo a su máquina
         BufferedReader br = new BufferedReader(new FileReader(file));
         String st;
         
@@ -178,15 +178,97 @@ public class Controller {
     public static int generateRandomSize() {
         return random.nextInt(901) + 100;
     }
-
+    
+    public static void generateRandomInstructions(int amountProcesses, int amountOps, int pSeed){ //
+        long seed = pSeed;
+        Random rand = new Random(seed);    
+        //Random rand = new Random();
+        
+        String lastInstruction = "nada";
+        String[] instructionSet = {"new", "use", "delete", "kill"};
+        
+        int existingNew = 0;        //Cuenta cantidad de instrucciones new
+        int existingUse = 0;        //Cuenta cantidad de instrucciones use
+        int existingDelete = 0;     //Cuenta cantidad de instrucciones delete
+        int existingKill = 0;       //Cuenta cantidad de instrucciones kill
+        
+        int pId = 1;                //Cuenta los procesos nuevos que se crean
+        int ptrs = 1;               //Cuenta la cantidad existente de punteros, cada instrucción new crea un puntero nuevo
+        
+        //ArrayList<Integer> allPID;
+        //ArrayList<Integer> allPTR;
+        
+        
+        String generatedInstructions = "";
+        
+        for(int i = 0; i < amountOps; i++){
+            int randomNumber = rand.nextInt(3 - 0 + 1) + 0;  
+            
+            String ins = instructionSet[randomNumber];
+            String line;
+            switch (ins){
+                case "new": //Proceso pide memoria
+                    if( (existingNew < amountProcesses) && !lastInstruction.equals("kill")){
+                        int randomMemorySize = rand.nextInt(409600 - 1 + 1) + 1;        //204 800 (hace 50 págs)        409600 (hace 100 páginas)
+                        line = "new("+pId+","+randomMemorySize+")" +"\n";
+                        generatedInstructions += line;
+                        lastInstruction = "new";
+                        existingNew++;
+                        pId++;
+                        ptrs++;
+                        
+                    }
+                    break;
+                    
+               case "use":
+                    if(ptrs > 0){                                   //Si existe al menos un puntero, NOTa: Tal vez se deba revisar 
+                        int randomPointer = rand.nextInt((pId) - 1 + 1) + 1;
+                        line = "use("+randomPointer+")" +"\n";
+                        generatedInstructions += line;
+                        lastInstruction = "use";
+                        existingUse++;
+                   }
+                   
+                    break;
+                    
+               case "delete":
+                    if(ptrs > 0){ 
+                        line = "delete(" + ")" +"\n";
+                        generatedInstructions += line;
+                        lastInstruction = "delete";
+                        existingDelete++;
+                        break;
+                    }
+                    
+               case "kill":
+                    line = "kill(" + ")" +"\n";
+                    generatedInstructions += line;
+                    lastInstruction = "kill";
+                    existingKill++;
+                    break; 
+            }
+ 
+        }
+        
+    System.out.println("Cant NEW = " + existingNew);  
+    System.out.println("Cant USE = " + existingUse); 
+    System.out.println("Cant DELETE = " + existingDelete); 
+    System.out.println("Cant KILL = " + existingKill); 
+    
+    System.out.println("Cant pid= " + (pId-1));
+    System.out.println("Cant ptrs = " + (ptrs-1));
+    
+    System.out.println(generatedInstructions);    
+    }
+    
     
     public static void main(String[] args) throws IOException {       
         //readInstructions();
         //simComputer1.printMemoryMap();      
         //simComputer1.printSymbolTable();
         //simComputer1.printRealMemory();
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Ingrese la semilla para random:");
+        //Scanner scanner = new Scanner(System.in);
+        /*System.out.println("Ingrese la semilla para random:");
         long randomSeed = scanner.nextLong();
         System.out.println("Ingrese el algoritmo a simular (FIFO, SC, MRU, RND):");
         String algorithm = scanner.next();
@@ -200,6 +282,23 @@ public class Controller {
         System.out.println("El archivo de operaciones ha sido generado exitosamente: " + fileName);
         SimulationInterface simulation = new SimulationInterface();
         simulation.setVisible(true);
-        simulation.setLocationRelativeTo(null);
+        simulation.setLocationRelativeTo(null);*/
+        
+        //generateRandomInstructions(10,200,1); /**/
+        
+        readInstructions();
+        
+        //simComputer1.printMemoryMap();      
+        //simComputer1.printSymbolTable();
+        //simComputer1.printRealMemory();
+        
+        //SimulationInterface simulation = new SimulationInterface();
+        //simulation.setVisible(true);
+        //simulation.setLocationRelativeTo(null);
+        
+        simComputer1.getMemory().totalProcesses();
+        simComputer1.getMemory().getRAM();
+        simComputer1.getMemory().getRAMPercentage();
+        
     }
 }
