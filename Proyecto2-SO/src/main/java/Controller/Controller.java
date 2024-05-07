@@ -327,7 +327,7 @@ public class Controller {
         
         //generateRandomInstructions(10,200,1); /**/
         
-        readInstructions();
+        //readInstructions();
         
         //simComputer1.printMemoryMap();      
         //simComputer1.printSymbolTable();

@@ -168,7 +168,6 @@ public class MMU {
           
         int amountPages = (int) size / (4 * 1024);                          //Se calcula la cantidad de páginas que requiere
         this.VRAM_KB += size/ 1024;
-        int amountPages = (int) size / (4 * 1024); 
         
         this.RAM += size / 1024;
         
@@ -690,7 +689,6 @@ public class MMU {
 
 
      }
-
   
     public Page searchPageinPageListByID(int pId){
         Page res = null;
@@ -700,8 +698,8 @@ public class MMU {
             }    
         }
         return res;
-    
-    public int totalProcesses(){
+    }
+   public int totalProcesses(){
         int total = processes.size();
         System.out.println("Total de procesos: " + total);
         return total;
@@ -716,10 +714,7 @@ public class MMU {
         System.out.println("Total de RAM%: " + RAM / 100);
         return RAM / 100;
     }
-    
-    
-        
-    }
+
   
 }
     
