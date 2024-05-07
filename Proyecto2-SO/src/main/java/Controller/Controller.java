@@ -15,14 +15,17 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import static java.lang.Math.random;
 import static java.lang.StrictMath.random;
+import static java.lang.Thread.sleep;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Controller {
 
     private Controller controller;
     private static Random random;
-    private boolean pauseFlag;
-    private static MMU memory = new MMU();
+    private static boolean pause;
+    
+    //private static MMU memory = new MMU();
     private static Computer simComputer1 = new Computer(1);
     private static Computer simComputer2 = new Computer(2);
     
@@ -30,13 +33,23 @@ public class Controller {
 
     public Controller() {
         //this.pauseFlag = pauseFlag;
+        this.pause = true;
         this.simComputer1 = new Computer(1);
         this.simComputer2 = new Computer(2);
         
     }
+
+    public static boolean isPaused() {
+        return pause;
+    }
+
+    public static void setPause(boolean pause) {
+        Controller.pause = pause;
+    }
     
+ 
     
-    public static void readInstructions() throws FileNotFoundException, IOException{
+    public void readInstructions(String dir) throws FileNotFoundException, IOException, InterruptedException{
         /*
         Función que cumple con el proceso de Tokenización.
         Entradas: N/A (El archivo podría ser un parámetro en el futuro)
@@ -44,7 +57,7 @@ public class Controller {
         Restricciones: Archivo debe ser un TXT.
         */
         
-        File file = new File("F:\\Ronaldo\\TEC\\Semestre 13 - 2024\\Sistemas Operativos\\Proyectos\\Proyecto 2\\Instructions.txt");     //Cambiar de acuerdo a su máquina
+        File file = new File(dir);     //Cambiar de acuerdo a su máquina
         BufferedReader br = new BufferedReader(new FileReader(file));
         String st;
         
@@ -53,7 +66,7 @@ public class Controller {
         String ptr = "";
         String[] res;
         
-        while ((st = br.readLine()) != null){ //Agregar condición de pausa!
+        while ((st = br.readLine()) != null && isPaused() != false){ //Agregar condición de pausa!
                 pid = "";
                 size = "";
                 ptr = "";
@@ -79,7 +92,8 @@ public class Controller {
                                     simComputer1.executeNewInstruction(Integer.valueOf(pid), Integer.valueOf(size));    //Se deben convertir ambos valores de Strings a enteros
                                     //simComputer2.executeNewInstruction(Integer.valueOf(pid), Integer.valueOf(size));
                                 }
-                        }                     
+                        }     
+                        
                         break;
                         
                     case "use":
@@ -92,6 +106,10 @@ public class Controller {
                         }
                         //System.out.println("Ejecutar instrucción Use");
                         //System.out.println(res[1]);
+                        /*System.out.println("");
+                        System.out.println("TABLA Actual =================");
+                        System.out.println("");
+                        printTableInfo();*/
                         break;
                         
                         
@@ -104,6 +122,7 @@ public class Controller {
                             simComputer1.executeDeleteInstruction(Integer.valueOf(ptr));    //Se deben convertir ambos valores de Strings a enteros
                             //simComputer2.executeDeleteInstruction(Integer.valueOf(ptr));
                         }
+                        
                         break;
                         
                     case "kill":    
@@ -114,9 +133,16 @@ public class Controller {
                             simComputer1.executeKillInstruction(Integer.valueOf(pid));    //Se deben convertir ambos valores de Strings a enteros
                             //simComputer2.executeKillInstruction(Integer.valueOf(pid));      
                         }
+                        
                         break;
-                }      
-        }   
+                }     
+                //sleep(3000);
+        }
+    /*System.out.println("");
+    System.out.println("TABLA FINAL =================");
+    System.out.println("");*/
+    printTableInfo();
+        
     }
     
     public void assignAlgorithm(int alg1, int alg2){
@@ -125,7 +151,18 @@ public class Controller {
        
     }
     
-    public static void generateOperationsFile(long randomSeed, String algorithm, int numProcesses, int numOperations, String fileName) {
+    public void printTableInfo(){
+        ArrayList<String[]> rows = simComputer1.getMemoryTableInfo();
+        for(String[] arr: rows ){
+            System.out.println("--pID-PageID-Loaded-Puntero-PosRAM-TimeStmp-Mark");
+            System.out.printf("%-6s%-8s%-7s%-9s%-8s%-9s%-4s%n", arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6]);
+            System.out.println(""); // Agregar una línea en blanco después de cada arreglo
+            //System.out.println(arr);
+        }
+        
+    }
+    
+    /*public static void generateOperationsFile(long randomSeed, String algorithm, int numProcesses, int numOperations, String fileName) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             //writer.write("RandomSeed: " + randomSeed);
             //writer.newLine();
@@ -147,10 +184,10 @@ public class Controller {
         } catch (IOException e) {
             System.err.println("Error al generar el archivo de operaciones: " + e.getMessage());
         }
-    }
+    }*/
 
-    
-        public static void readInstructions(String fileName) {
+    /*
+    public static void readInstructions(String fileName) {
         try (Scanner scanner = new Scanner(fileName)) {
             while (scanner.hasNextLine()) {
                 String instruction = scanner.nextLine();
@@ -178,14 +215,15 @@ public class Controller {
     public static int generateRandomSize() {
         return random.nextInt(901) + 100;
     }
-
+*/
     
     public static void main(String[] args) throws IOException {       
         //readInstructions();
         //simComputer1.printMemoryMap();      
         //simComputer1.printSymbolTable();
         //simComputer1.printRealMemory();
-        Scanner scanner = new Scanner(System.in);
+        
+        /*Scanner scanner = new Scanner(System.in);
         System.out.println("Ingrese la semilla para random:");
         long randomSeed = scanner.nextLong();
         System.out.println("Ingrese el algoritmo a simular (FIFO, SC, MRU, RND):");
@@ -200,6 +238,6 @@ public class Controller {
         System.out.println("El archivo de operaciones ha sido generado exitosamente: " + fileName);
         SimulationInterface simulation = new SimulationInterface();
         simulation.setVisible(true);
-        simulation.setLocationRelativeTo(null);
+        simulation.setLocationRelativeTo(null);*/
     }
 }

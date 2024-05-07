@@ -1,5 +1,7 @@
 package Model;
 
+import java.util.ArrayList;
+
 public class Computer {
     
     private int algorithm;
@@ -17,6 +19,7 @@ public class Computer {
         this.readyFlag = true;
 
     }
+    
 
     public int getAlgorithm() {
         return algorithm;
@@ -46,25 +49,53 @@ public class Computer {
         this.readyFlag = false;
         memory.newInstruction(pid, size);
         this.readyFlag = true;
+        //getMemoryTableInfo();
+        /*System.out.println("Tabla actual");
+        ArrayList<String[]> rows = getMemoryTableInfo();
+        for(String[] arr: rows ){
+            System.out.println(arr[0] + ", " + arr[1] + ", " + arr[2] + ", " + arr[3] + ", " + arr[4] + ", " + arr[5] + ", " + arr[6]);
+            System.out.println("");
+        }*/
     }
     
     public void executeUseInstruction(int ptr){
         this.readyFlag = false;
          memory.useInstruction(ptr);
          this.readyFlag = true;
-         //memory.printRealMemory2();
+         //getMemoryTableInfo();
+         /*System.out.println("Tabla actual");
+        ArrayList<String[]> rows = getMemoryTableInfo();
+        for(String[] arr: rows ){
+            System.out.println(arr[0] + ", " + arr[1] + ", " + arr[2] + ", " + arr[3] + ", " + arr[4] + ", " + arr[5] + ", " + arr[6]);
+            System.out.println("");
+        }*/
     }
     
     public void executeDeleteInstruction(int ptr){
          this.readyFlag = false;
          memory.deleteInstruction(ptr);
          this.readyFlag = true;
+         //getMemoryTableInfo();
+        /*System.out.println("Tabla actual");
+        ArrayList<String[]> rows = getMemoryTableInfo();
+        for(String[] arr: rows ){
+            System.out.println(arr[0] + ", " + arr[1] + ", " + arr[2] + ", " + arr[3] + ", " + arr[4] + ", " + arr[5] + ", " + arr[6]);
+            System.out.println("");
+        }*/
     }
     
     public void executeKillInstruction(int pid){
          this.readyFlag = false;
          memory.killInstruction(pid);
+         
          this.readyFlag = true;
+         //getMemoryTableInfo();
+         /*System.out.println("Tabla actual");
+        ArrayList<String[]> rows = getMemoryTableInfo();
+        for(String[] arr: rows ){
+            System.out.println(arr[0] + ", " + arr[1] + ", " + arr[2] + ", " + arr[3] + ", " + arr[4] + ", " + arr[5] + ", " + arr[6]);
+            System.out.println("");
+        }*/
     }
     
     public void printSymbolTable(){
@@ -77,6 +108,10 @@ public class Computer {
     
     public void printRealMemory(){
         memory.printRealMemory2();
+    }
+    
+    public ArrayList<String[]> getMemoryTableInfo(){
+        return memory.getTableInfo();
     }
     
     

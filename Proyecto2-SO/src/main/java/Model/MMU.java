@@ -11,6 +11,7 @@ public class MMU {
     
     //private String instructions;
     private int alg;
+    private int clock;
     private int currentPtr;
     private ArrayList<Page> pages;                        
     private Integer[] realMemory2;                          //Indica qué paginas están en memoria real
@@ -18,6 +19,7 @@ public class MMU {
     private ArrayList<Process> processes;                   //Guarda los procesos que están existiendo actualemente (No necesariamente ejecutándose)
     private SymbolTable symbolTable;                        //Guarda punteros y su lista de páginas          
     private Map<Integer, ArrayList<Integer>> memoryMap;     //Guarda Procesos y su lista de punteros
+    
     private double VRAM_KB;
     
     int hits;                           //Lleva la cantidad de Hits de Página totales
@@ -34,6 +36,7 @@ public class MMU {
         this.memoryMap = new HashMap<>(); 
         this.VRAM_KB = 0.0;
         this.alg = 2;
+        this.clock = 0;
         
         this.hits = 0;           
         this.faults = 0;         
@@ -53,11 +56,105 @@ public class MMU {
     public void setAlg(int alg) {
         this.alg = alg;
     }
-  
+
+    public int getThrashingTime() {              //Devuelve el tiempo de Thrashing
+        return faults * 5;                      
+    }
+    
+    public ArrayList<String[]> getTableInfo(){  
+       ArrayList<String[]> tableInfo = new ArrayList<>();
+       
+      // String[] row = new String[7];
+       String pid = "";
+       String PageId = "";
+       String loaded = "";          //Puntero
+       String logicalAdress = "";
+       String memoryAdress = "";    //RAM  
+       String loadedTime = "";
+       String mark = "";
+       
+       
+       
+       for(Map.Entry<Integer,ArrayList<Integer>> entry : this.memoryMap.entrySet() ){           //Para cada proceso en el Mapa de Memoria     
+            
+            pid = "";               //Id de Proceso
+            PageId = "";            //Id de Página
+            loaded = "";            //Está cargado en RAM?
+            logicalAdress = "";     //Puntero
+            memoryAdress = "?";    //Posición en RAM   
+            loadedTime = "";        //timestamp
+            mark = "";              //Marking
+
+           int processId = entry.getKey();        
+           pid = String.valueOf(processId);
+           
+           
+           ArrayList<Integer> pointers = memoryMap.get(processId);         
+           for(Integer ptr: pointers){                                                          //Por cada puntero del Mapa de Memoria
+               ArrayList<Integer> pages = this.symbolTable.getPointerPages(ptr);                //Obtener la lista de páginas asociadas al puntero
+               for(Integer pg : pages){
+                   String[] row = new String[7];
+                   //Por cada página en la lista        
+                   loaded = "NO";
+                   logicalAdress = String.valueOf(ptr);
+                   memoryAdress = "VRAM";
+                   mark = "N/A";
+                   for(int i = 0; i < 25; i++){  //Busca si está en memoria real RAM
+                       
+                       if(this.realMemory2[i] == pg){                       
+                           loaded = "YES";
+                           logicalAdress = String.valueOf(ptr);
+                           memoryAdress = String.valueOf(i);
+                           Page actualPage = searchPageinPageListByID(pg);
+                           loadedTime = String.valueOf(actualPage.getTimeStamp()) + "s";
+                           if(actualPage.hasSecondChance()){
+                               mark = "Has Second Chance";
+                           }
+                       }      
+                   }
+                    row[0] = pid;
+                    row[1] = String.valueOf(pg);
+                    row[2] = loaded;          //Puntero
+                    row[3] = logicalAdress;
+                    row[4] = memoryAdress;    //RAM  
+                    row[5] = loadedTime;
+                    row[6] = mark;
+                    
+                   /* System.out.println("Fila Actual");
+                    System.out.println("");
+                    System.out.println("PID =" + row[0] + " PageID =" + row[1] + " Loaded =" + row[2] +" LogicalAdress =" + row[3]+ " MemoryAdress =" + row[4]+" TimeStamp =" + row[5] +" Marking =" + row[6]);
+                    System.out.println("");*/
+                    
+                    tableInfo.add(row);
+                    
+                }
+                         
+           }
+       
+       }
+
+       return tableInfo;
+                
+    }
+
+    public int getClock() {
+        return clock;
+    }
+
+    public void setClock(int clock) {
+        this.clock = clock;
+    }
+    
+    
+    
+    
+    
+    
+    
     
     /////
     
-    public void newInstruction(int pid, int size){
+    public void newInstruction(int pid, int size){ ///Size en bytes
         /*
         Función que asigna memoria para procesos nuevos o existentes .
         Entradas: pid = ProcessId, size = Tamaño en bytes de solicitud de memoria.
@@ -69,6 +166,7 @@ public class MMU {
         */
           
         int amountPages = (int) size / (4 * 1024);                          //Se calcula la cantidad de páginas que requiere
+        this.VRAM_KB += size/ 1024;
         Process actualProcess = null;
         System.out.println("NEW PID= "+ pid);       
         System.out.println("Cant paginas a asignar: " + Integer.toString(amountPages));
@@ -202,7 +300,12 @@ public class MMU {
                         if(emptyFrame)
                            continue;
                         
+                        
+                        Page actualPage = searchPageinPageListByID(page);
                         realMemory2[this.firstOut] = page;          //Caso 3: Reemplezar una página de acuerdo a cuál fue la primera página que entró
+                        this.clock += 5;
+                        actualPage.setPhyAdress(this.firstOut);     //Asigna a la página su dirección en memoria RAM 
+                        actualPage.setTimeStamp(this.clock);
                         this.firstOut++; 
                         this.faults++;                              //Aumenta cantidad de fallos de página
                         
@@ -239,7 +342,7 @@ public class MMU {
                                
                         //realMemory2[this.firstOut] = page;          //Caso 3: Reemplezar una página de acuerdo a cuál fue la primera página que entró
                                                     //Aumenta cantidad de fallos de página
-                                                    
+                        Page actualPage = searchPageinPageListByID(page);                            
                         for(Page pg: this.pages){                   //Itera toda la lista de páginas existentes
                             //System.out.println("+*+*+*+*+* PAGE = " + page + " PageID = " + pg.getPageID());
                             if(realMemory2[this.firstOut] == pg.getPageID()){             //Si la página en RAM actual está en la lista de páginas existentes    
@@ -250,19 +353,27 @@ public class MMU {
                                         checkNextSC(pag);                           //Chequear si el siguiente campo también tiene Second Chance
                                    }
                                    realMemory2[this.firstOut+1] = page;
+                                   this.clock += 5;
                                    this.firstOut++;
                                    pg.setSecondChance(false);
                                    System.out.println("===== PAGE = " + pg.getPageID() +"Vida Extra Usada");
                                    
                                    
+                                   
+                                   
                                }else{
                                    System.out.println("No hay vidas extra, SE REEEMPLAZA PAGE" + page);
                                    realMemory2[this.firstOut] = page;
+                                   this.clock += 5;
                                }  
+                               
                             }/*else{
                                 System.out.println("===== PAGE = " + pg.getPageID() +" No Tiene vida extra!");
                             }  */
                         }
+                        
+                        actualPage.setPhyAdress(this.firstOut);     //Asigna a la página su dirección en memoria RAM 
+                        actualPage.setTimeStamp(this.clock);
                         this.firstOut++;
                         this.faults++; 
                         
@@ -289,13 +400,17 @@ public class MMU {
                         if(emptyFrame)
                            continue;
                         
+                        Page actualPage = searchPageinPageListByID(page);
                         for(int i = 0; i < 25; i++){                 //Caso 3: Busca en toda la memoria si la página actual es la más reciente
                             if(realMemory2[i] == this.mostRecent){  //Si es la página mas reciente...
                                 realMemory2[i] = page;              //Se asigna la página nueva a su posición.
+                                this.clock += 5;
                             }
                         }
                         
                         this.mostRecent = page;                     //Se actualiza cuál es el nuevo, más reciente
+                        actualPage.setPhyAdress(this.firstOut);     //Asigna a la página su dirección en memoria RAM 
+                        actualPage.setTimeStamp(this.clock);                     
                         this.faults++;                              //Aumenta cantidad de fallos de página
                     }
                     break;
@@ -322,7 +437,11 @@ public class MMU {
                         if(emptyFrame)
                            continue;
                         
-                        realMemory2[randomNumber] = page;           //cASO 3: Selecciona un marco de página random y cambia su página a la nueva
+                        Page actualPage = searchPageinPageListByID(page);
+                        realMemory2[randomNumber] = page;           //CASO 3: Selecciona un marco de página random y cambia su página a la nueva
+                        this.clock += 5;
+                        actualPage.setPhyAdress(this.firstOut);     //Asigna a la página su dirección en memoria RAM 
+                        actualPage.setTimeStamp(this.clock);
                         this.faults++;                              //Aumenta cantidad de fallos de página
                         
                     }
@@ -435,7 +554,7 @@ public class MMU {
         for(int i = 0; i < 25; i++){             //Caso 1: Se le busca si está en memoria Real
             if(this.realMemory2[i] == p){
                 this.hits++;
-                //CLock +1
+                this.clock += 1;
                 found = true;                    //Si la encuentra, es un hit de página, Nota: asignar tiempo de reloj +1
                 this.mostRecent = p;
                 System.out.println("Es un HIT!!!");          
@@ -452,7 +571,7 @@ public class MMU {
         for(int i = 0; i < 25; i++){             //Caso 1: Se le busca si está en memoria Real
             if(this.realMemory2[i] == p){
                 this.hits++;
-                //CLock +1
+                this.clock += 1;
                 found = true;                    //Si la encuentra, es un hit de página, Nota: asignar tiempo de reloj +1
                 //this.mostRecent = p;
                 System.out.println("Es un HIT!!!");
@@ -488,7 +607,7 @@ public class MMU {
             if(this.realMemory2[i] == -1){               //Si el campo está vacio  
                 this.realMemory2[i] = p;              //Se agrega la página al espacio vacío
                 //Cambiar estado de Dirección Física de la página actual
-                //CLock +1 
+                this.clock += 1; 
                 //this.firstOut++;
                 this.mostRecent = p;
                 emptyFrame = true;
@@ -565,14 +684,20 @@ public class MMU {
 
 
      }
-        
- 
 
-
-}
-    
   
-    
+    public Page searchPageinPageListByID(int pId){
+        Page res = null;
+        for(Page p: this.pages){
+            if(p.getPageID() == pId){
+                res = p;
+            }    
+        }
+        return res;
+        
+    }
+  
+}
     
     
     

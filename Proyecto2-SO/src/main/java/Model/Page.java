@@ -6,6 +6,8 @@ public class Page {
     private int pageID;
     private int phyAdress;                  //Marco de memoria que se le asignó
     private boolean flag;
+    private int timeStamp;
+    
     
     
     //Marking
@@ -24,7 +26,7 @@ public class Page {
         this.pageID = pId++;
         this.phyAdress = phyAdress;
         this.flag = flag;
-        
+        this.timeStamp = 0;
         this.recent = false;
         this.secondChance = false;
         
@@ -70,6 +72,16 @@ public class Page {
     public void setSecondChance(boolean secondChance) {
         this.secondChance = secondChance;
     }
+
+    public int getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(int timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+    
+    
    
 
 }
