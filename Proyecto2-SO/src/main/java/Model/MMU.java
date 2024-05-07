@@ -28,7 +28,7 @@ public class MMU {
     int firstOut;                       //Si se está usando FIFO, este contador decide qué índice es el que se debe reemplazar
     int mostRecent;                     //Si se está usando MRU, este contador guarda cuál fué la última página que se agregó
 
-    public MMU(/*int algorithm*/) {
+    public MMU(int algorithm) {
         //this.instructions = instructions;
         this.currentPtr = 1;          
         this.processes = new ArrayList<Process>();
@@ -36,7 +36,7 @@ public class MMU {
         this.symbolTable = new SymbolTable();
         this.memoryMap = new HashMap<>(); 
         this.VRAM_KB = 0.0;
-        this.alg = 2;
+        this.alg = algorithm;
         this.clock = 0;
         
         this.hits = 0;           
@@ -104,7 +104,7 @@ public class MMU {
                        
                        if(this.realMemory2[i] == pg){                       
                            loaded = "YES";
-                           logicalAdress = String.valueOf(ptr);
+                           //logicalAdress = String.valueOf(ptr);
                            memoryAdress = String.valueOf(i);
                            Page actualPage = searchPageinPageListByID(pg);
                            loadedTime = String.valueOf(actualPage.getTimeStamp()) + "s";
@@ -113,8 +113,8 @@ public class MMU {
                            }
                        }      
                    }
-                    row[0] = pid;
-                    row[1] = String.valueOf(pg);
+                    row[0] = String.valueOf(pg);
+                    row[1] = pid;
                     row[2] = loaded;          //Puntero
                     row[3] = logicalAdress;
                     row[4] = memoryAdress;    //RAM  
@@ -149,7 +149,14 @@ public class MMU {
     
     
     
-    
+    public void premonition(){
+        //New para ver qué páginas se van a hacer
+        
+        //Use para ver en qué orden van a llegar
+        
+        
+        
+    }
     
     
     
@@ -282,7 +289,7 @@ public class MMU {
             
                 case 1: //FIFO
                     
-                    System.out.println("----------");
+                    System.out.println("-----FIFO SELECCIONADO-----");
                     for(Integer page: pages){
                             
                         if(this.firstOut == 25){                       
@@ -323,6 +330,7 @@ public class MMU {
                     
                     break;
                 case 2: //Second Chance
+                    System.out.println("-----SECOND CHANCE SELECCIONADO-----");
                     for(Integer page: pages){
 
                         if(this.firstOut == 25){                       
@@ -386,6 +394,7 @@ public class MMU {
                     break;
                     
                 case 3: //MRU (Most Recent Used)
+                    System.out.println("-----MRU SELECCIONADO-----");
                     for(Integer page: pages){
                         
                         System.out.println(">>>>Memoria Actual>>>>   MRU = " + this.mostRecent);
@@ -420,6 +429,7 @@ public class MMU {
                     }
                     break;
                 case 4: //Random
+                    System.out.println("-----FIFO SELECCIONADO-----");
                     Random rand = new Random();
                     //int randomNumber = rand.nextInt(100 - 0 + 1) + 0;
                     int randomNumber = rand.nextInt(4 - 0 + 1) + 0;
@@ -510,10 +520,7 @@ public class MMU {
         memoryMap.remove(pid);
         System.out.println("REMOVED PID= " + pid);
         
-        //Process processToKill;
-        
-       
-        
+        //Process processToKill; 
         //processes.remove()
         //System.out.println("KILL PID= " + pid + " PTRS= "+ ptrList);
     }

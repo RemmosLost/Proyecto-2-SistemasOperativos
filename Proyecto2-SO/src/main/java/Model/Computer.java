@@ -9,13 +9,13 @@ public class Computer {
     private double VRAM_KB;
     private MMU memory; 
     private boolean readyFlag;
+
     
-    public Computer(int pAlgorithm){
-        
+    public Computer(int pAlgorithm){   
         this.algorithm = pAlgorithm;
         this.clock = 0;
         this.VRAM_KB = 0.0;
-        this.memory = new MMU();
+        this.memory = new MMU(pAlgorithm);
         this.readyFlag = true;
 
     }
@@ -67,7 +67,7 @@ public class Computer {
     }
     
     public void executeUseInstruction(int ptr){
-        this.readyFlag = false;
+         this.readyFlag = false;
          memory.useInstruction(ptr);
          this.readyFlag = true;
          //getMemoryTableInfo();

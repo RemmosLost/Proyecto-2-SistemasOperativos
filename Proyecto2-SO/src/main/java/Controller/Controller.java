@@ -24,6 +24,8 @@ public class Controller {
     private Controller controller;
     private static Random random;
     private static boolean pause;
+    //private ArrayList<String[]> simComputer1MemoryTable;
+    //private ArrayList<String[]> simComputer2MemoryTable;
     
     //private static MMU memory = new MMU();
     private static Computer simComputer1 = new Computer(1);
@@ -31,12 +33,13 @@ public class Controller {
     
     
 
-    public Controller() {
+    public Controller(/*int pAlgorithm/*,int pAlgorithm*/) {
         //this.pauseFlag = pauseFlag;
-        this.pause = true;
-        this.simComputer1 = new Computer(1);
-        this.simComputer2 = new Computer(2);
-        
+        this.pause = true;  
+    }
+    public void startComputers(int pAlgorithm){
+        this.simComputer1 = new Computer(pAlgorithm);
+        this.simComputer2 = new Computer(0);
     }
 
     public static boolean isPaused() {
@@ -47,9 +50,9 @@ public class Controller {
         Controller.pause = pause;
     }
     
- 
     
-    public void readInstructions(String dir) throws FileNotFoundException, IOException, InterruptedException{
+    
+    public ArrayList<String[]> readInstructions(String st/*String dir*/) throws FileNotFoundException, IOException, InterruptedException{
         /*
         Función que cumple con el proceso de Tokenización.
         Entradas: N/A (El archivo podría ser un parámetro en el futuro)
@@ -57,19 +60,18 @@ public class Controller {
         Restricciones: Archivo debe ser un TXT.
         */
         
-        File file = new File(dir);     //Cambiar de acuerdo a su máquina
+        /*File file = new File(dir);     //Cambiar de acuerdo a su máquina
         BufferedReader br = new BufferedReader(new FileReader(file));
-        String st;
+        String st;*/
         
         String pid = "";
         String size = "";   
         String ptr = "";
         String[] res;
         
-        while ((st = br.readLine()) != null && isPaused() != false){ //Agregar condición de pausa!
-                pid = "";
-                size = "";
-                ptr = "";
+        //while ((st = br.readLine()) != null && isPaused() != false){ //Agregar condición de pausa!
+                
+                
                 
                 res = st.split("[\\\\()]");                     //Quita los paréntesis de la instrucción                
                 String instruction = res[0];
@@ -136,30 +138,35 @@ public class Controller {
                         
                         break;
                 }     
-                //sleep(3000);
+                //sleep(2000);
+                return simComputer1.getMemoryTableInfo();
         }
     /*System.out.println("");
     System.out.println("TABLA FINAL =================");
     System.out.println("");*/
-    printTableInfo();
+    //printTableInfo();
         
-    }
     
-    public void assignAlgorithm(int alg1, int alg2){
+    
+    public void assignAlgorithm(int alg1/*, int alg2*/){
         simComputer1.setAlgorithm(alg1);
         //simComputer2.setAlgorithm(alg2);
        
     }
     
-    public void printTableInfo(){
-        ArrayList<String[]> rows = simComputer1.getMemoryTableInfo();
+    public ArrayList<String[]> getMemoryTableInfo(){
+        /*ArrayList<String[]> rows = simComputer1.getMemoryTableInfo();
         for(String[] arr: rows ){
             System.out.println("--pID-PageID-Loaded-Puntero-PosRAM-TimeStmp-Mark");
             System.out.printf("%-6s%-8s%-7s%-9s%-8s%-9s%-4s%n", arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6]);
             System.out.println(""); // Agregar una línea en blanco después de cada arreglo
             //System.out.println(arr);
         }
+        */
         
+        return simComputer1.getMemoryTableInfo();
+        
+       
     }
     
     /*public static void generateOperationsFile(long randomSeed, String algorithm, int numProcesses, int numOperations, String fileName) {

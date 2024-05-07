@@ -31,7 +31,6 @@ public class Page {
         this.secondChance = false;
         
     }
-
     
     public int getPageID() {
         return pageID;
