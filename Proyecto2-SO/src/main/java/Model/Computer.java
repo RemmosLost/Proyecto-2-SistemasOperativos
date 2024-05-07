@@ -21,6 +21,14 @@ public class Computer {
     }
     
 
+    public MMU getMemory() {
+        return memory;
+    }
+
+    public void setMemory(MMU memory) {
+        this.memory = memory;
+    }
+
     public int getAlgorithm() {
         return algorithm;
     }
