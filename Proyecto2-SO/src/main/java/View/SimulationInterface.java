@@ -58,8 +58,13 @@ public class SimulationInterface extends javax.swing.JFrame {
         jScrollPane12 = new javax.swing.JScrollPane();
         FRAGMENTATION_ALG_TBL = new javax.swing.JTable();
         GRAPHICS_BTN = new javax.swing.JButton();
+        PLAY_SIMULATION_BTN = new javax.swing.JButton();
+        PAUSE_SIMULATION_BTN = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         MMU_OPTIMO_TBL.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -402,52 +407,39 @@ public class SimulationInterface extends javax.swing.JFrame {
             }
         });
 
+        PLAY_SIMULATION_BTN.setText("PLAY");
+        PLAY_SIMULATION_BTN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PLAY_SIMULATION_BTNActionPerformed(evt);
+            }
+        });
+
+        PAUSE_SIMULATION_BTN.setText("PAUSE");
+
+        jButton1.setText("READ");
+
+        jButton2.setText("GENERATE");
+
         javax.swing.GroupLayout SIMULATION_PANELLayout = new javax.swing.GroupLayout(SIMULATION_PANEL);
         SIMULATION_PANEL.setLayout(SIMULATION_PANELLayout);
         SIMULATION_PANELLayout.setHorizontalGroup(
             SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
-                .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 545, Short.MAX_VALUE))
-                    .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
-                        .addGap(72, 72, 72)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane5)))
-                .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(GRAPHICS_BTN)
-                        .addGap(74, 74, 74)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(12, Short.MAX_VALUE))
-                    .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
-                        .addGap(75, 75, 75)
-                        .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 545, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 545, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
-                                .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
-                        .addGap(0, 0, Short.MAX_VALUE))))
             .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
                 .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
                         .addGap(123, 123, 123)
                         .addComponent(PAGES_OPT_LBL)
                         .addGap(600, 600, 600)
-                        .addComponent(PAGES_ALG_LBL)
-                        .addGap(81, 81, 81))
+                        .addComponent(PAGES_ALG_LBL))
                     .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(PLAY_SIMULATION_BTN)
+                            .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
+                                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(409, Short.MAX_VALUE))
             .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
                 .addGap(66, 66, 66)
                 .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -455,22 +447,63 @@ public class SimulationInterface extends javax.swing.JFrame {
                 .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(61, 61, 61))
             .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
-                .addGap(247, 247, 247)
-                .addComponent(MMU_OPTIMO_LBL)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(256, 256, 256))
+                .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
+                        .addGap(247, 247, 247)
+                        .addComponent(MMU_OPTIMO_LBL)
+                        .addGap(172, 172, 172)
+                        .addComponent(jButton1))
+                    .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 545, Short.MAX_VALUE))
+                        .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
+                            .addGap(72, 72, 72)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(jScrollPane5))))
+                .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(GRAPHICS_BTN)
+                        .addGap(95, 95, 95)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
+                        .addGap(75, 75, 75)
+                        .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(PAUSE_SIMULATION_BTN)
+                            .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 545, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 545, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
+                                    .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                            .addComponent(jButton2))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addGap(256, 256, 256))))
         );
         SIMULATION_PANELLayout.setVerticalGroup(
             SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(MMU_OPTIMO_LBL)
-                    .addComponent(jLabel1))
                 .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
-                        .addGap(19, 19, 19)
+                        .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(MMU_OPTIMO_LBL)
+                            .addComponent(jLabel1))
+                        .addGap(288, 288, 288)
+                        .addComponent(GRAPHICS_BTN))
+                    .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
+                        .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton1)
+                            .addComponent(jButton2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -496,29 +529,15 @@ public class SimulationInterface extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
-                            .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
-                    .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
-                        .addGap(288, 288, 288)
-                        .addComponent(GRAPHICS_BTN)))
-                .addContainerGap(85, Short.MAX_VALUE))
+                            .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(PLAY_SIMULATION_BTN)
+                    .addComponent(PAUSE_SIMULATION_BTN))
+                .addGap(25, 25, 25))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(SIMULATION_PANEL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(SIMULATION_PANEL, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
+        getContentPane().add(SIMULATION_PANEL, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -527,6 +546,10 @@ public class SimulationInterface extends javax.swing.JFrame {
         
         DefaultPieDataset pie = new DefaultPieDataset();
     }//GEN-LAST:event_GRAPHICS_BTNActionPerformed
+
+    private void PLAY_SIMULATION_BTNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PLAY_SIMULATION_BTNActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_PLAY_SIMULATION_BTNActionPerformed
 
     
 
@@ -541,6 +564,8 @@ public class SimulationInterface extends javax.swing.JFrame {
     private javax.swing.JTable PAGES_ALG_TBL;
     private javax.swing.JLabel PAGES_OPT_LBL;
     private javax.swing.JTable PAGES_OPT_TBL;
+    private javax.swing.JButton PAUSE_SIMULATION_BTN;
+    private javax.swing.JButton PLAY_SIMULATION_BTN;
     private javax.swing.JTable PROCESSES_ALG_TBL;
     private javax.swing.JTable PROCESSES_OPT_TBL;
     private javax.swing.JTable RAM_ALG_TBL;
@@ -548,6 +573,8 @@ public class SimulationInterface extends javax.swing.JFrame {
     private javax.swing.JPanel SIMULATION_PANEL;
     private javax.swing.JTable TRASHING_ALG_TBL;
     private javax.swing.JTable TRASHING_OPT_TBL;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
