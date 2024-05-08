@@ -1,28 +1,28 @@
 package Model;
 
 
-public class Page {
-    //private static int global = 0;  
-    private static int pId = 0;
+public class PremonitionPage {
+    private static int pId = 0;   
     private int pageID;
     private int phyAdress;                  //Marco de memoria que se le asignó
     private boolean flag;
     private int timeStamp;
+    
+    
     
     //Marking
     private boolean recent;
     private boolean secondChance;
     
 
-    public Page() {
-        
+    public PremonitionPage() {
         this.pageID = pId;
         this.phyAdress = -1;                //Indica que empieza estando em memoria virtual VRAM
         pId++;
         this.secondChance = false;
     }
     
-    public Page(int phyAdress, boolean flag, boolean algorithm) {
+    public PremonitionPage(int phyAdress, boolean flag, boolean algorithm) {
         this.pageID = pId++;
         this.phyAdress = phyAdress;
         this.flag = flag;

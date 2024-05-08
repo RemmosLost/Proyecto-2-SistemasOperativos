@@ -556,6 +556,31 @@ public class SimulationInterface extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void PLAY_SIMULATION_BTNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PLAY_SIMULATION_BTNActionPerformed
+        try {
+            playDo();
+        } catch (IOException ex) {
+            Logger.getLogger(SimulationInterface.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SimulationInterface.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_PLAY_SIMULATION_BTNActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        //j.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        
+        fileChooser.setVisible(true);
+        fileChooser.showOpenDialog(fileChooser);
+        
+        this.path = fileChooser.getSelectedFile().getAbsolutePath();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void PAUSE_SIMULATION_BTNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PAUSE_SIMULATION_BTNActionPerformed
+       this.c.setPause(true);
+    }//GEN-LAST:event_PAUSE_SIMULATION_BTNActionPerformed
+
+    public void playDo() throws FileNotFoundException, IOException, InterruptedException{
         c = new Controller();
         int alg = algorithm_ComboBox.getSelectedIndex() + 1;
         c.startComputers(alg);
@@ -573,6 +598,7 @@ public class SimulationInterface extends javax.swing.JFrame {
         int pidColumnIndex = 1; // Índice de la columna "PID" en el modelo
         MMU_ALGORITMO_TBL.setDefaultRenderer(Object.class, new CustomTableCellRenderer(pidColumnIndex));
 
+<<<<<<< Updated upstream
         
 
         DefaultTableModel modelo2 = new DefaultTableModel();
@@ -687,6 +713,14 @@ public class SimulationInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_PAUSE_SIMULATION_BTNActionPerformed
 
      public static void main(String args[]) {
+=======
+        FileReadWorker worker = new FileReadWorker(this.path, modelo, c); // Pasar la instancia de Controller como parámetro
+        worker.execute();
+                              
+    }
+
+public static void main(String args[]) {
+>>>>>>> Stashed changes
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.

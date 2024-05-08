@@ -2,6 +2,7 @@ package Controller;
 
 import Model.MMU;
 import Model.Computer;
+import Model.Premonition;
 import View.SimulationInterface;
 
 
@@ -24,10 +25,13 @@ public class Controller {
     private Controller controller;
     private static Random random;
     private static boolean pause;
+    private Premonition pre;
+    private ArrayList<Integer> premonitionPages;
     //private ArrayList<String[]> simComputer1MemoryTable;
     //private ArrayList<String[]> simComputer2MemoryTable;
     
     //private static MMU memory = new MMU();
+    
     private static Computer simComputer1 = new Computer(1);
     private static Computer simComputer2 = new Computer(2);
     
@@ -35,6 +39,8 @@ public class Controller {
 
     public Controller(/*int pAlgorithm/*,int pAlgorithm*/) {
         //this.pauseFlag = pauseFlag;
+        this.pre = new Premonition();
+        this.premonitionPages = new ArrayList<Integer>();
         this.pause = true;  
     }
     public void startComputers(int pAlgorithm){
@@ -50,9 +56,55 @@ public class Controller {
         Controller.pause = pause;
     }
     
+    public ArrayList<Integer> doPremonition(BufferedReader br) throws IOException{
+        System.out.println("PREMONICIÓN ##############################################################");
+        String st;
+        while ((st = br.readLine()) != null){
+            String pid = "";
+            String size = "";   
+            String ptr = "";
+            String[] res;
+
+            res = st.split("[\\\\()]");                     //Quita los paréntesis de la instrucción                
+            String instruction = res[0];                
+            switch(instruction){
+                case "new":
+                    if(res[1].contains(",")){                               //Si parte de la instrucción lleva una ",", quiere decir que es la instrucción "new"
+
+                            String[] splitRes;
+                            splitRes = res[1].split(",");
+                            pid = splitRes[0];                              //Toma el primer número antes del paréntesis (Es decir, el Pid del proceso)                   
+                            size = splitRes[1];                             // Toma el número después de la coma (Es decir el Size en Bytes del proceso)
+
+                            this.pre.executeNewInstruction(Integer.valueOf(pid), Integer.valueOf(size));   
+                    }     
+
+                    break;
+
+                case "use":
+                    ptr = res[1];
+                    this.pre.executeUseInstruction(Integer.valueOf(ptr));  
+                    break;
+
+            }
+        
+        }
+        
+        /*for(Integer page:this.pre.getPremonitionPages()){
+            System.out.println("pagina usada en Premonición:" + page);
+        }*/
+        //System.out.println(this.pre.getPremonitionPages().toString());
+        //System.out.println(" FIN PREMONICIÓN Páginas##############################################################");
+        
+        
+        
+        
+        return this.pre.getPremonitionPages();
+       
+    }
     
     
-    public ArrayList<String[]> readInstructions(String st/*String dir*/) throws FileNotFoundException, IOException, InterruptedException{
+    public ArrayList<String[]> readInstructions(String st, ArrayList<Integer> premonition/*String dir*/) throws FileNotFoundException, IOException, InterruptedException{
         /*
         Función que cumple con el proceso de Tokenización.
         Entradas: N/A (El archivo podría ser un parámetro en el futuro)
@@ -64,83 +116,98 @@ public class Controller {
         BufferedReader br = new BufferedReader(new FileReader(file));
         String st;*/
         
+        //ArrayList<ArrayList<String[]>> result = new ArrayList<>();
+        ArrayList<String[]> result = new ArrayList<>();
         String pid = "";
         String size = "";   
         String ptr = "";
         String[] res;
         
         //while ((st = br.readLine()) != null && isPaused() != false){ //Agregar condición de pausa!
-                
-                
-                
-                res = st.split("[\\\\()]");                     //Quita los paréntesis de la instrucción                
-                String instruction = res[0];
-                               
-                switch(instruction){
-                    case "new":
-                        //System.out.println("Ejecutar instrucción New");
-                        //System.out.println("Entra:"+ res[1]);
-                        if(res[1].contains(",")){                               //Si parte de la instrucción lleva una ",", quiere decir que es la instrucción "new"
-                                
-                                String[] splitRes;
-                                splitRes = res[1].split(",");
-                                pid = splitRes[0];                              //Toma el primer número antes del paréntesis (Es decir, el Pid del proceso)                   
-                                size = splitRes[1];                             // Toma el número después de la coma (Es decir el Size en Bytes del proceso)
-                                
-                                
-                                //System.out.println("PID:"+ pid);
-                                //System.out.println("Size:"+ size);
-                                if(simComputer1.isReadyFlag() && simComputer2.isReadyFlag()){                
-                                    simComputer1.executeNewInstruction(Integer.valueOf(pid), Integer.valueOf(size));    //Se deben convertir ambos valores de Strings a enteros
-                                    //simComputer2.executeNewInstruction(Integer.valueOf(pid), Integer.valueOf(size));
-                                }
-                        }     
-                        
-                        break;
-                        
-                    case "use":
-                        
-                        ptr = res[1];
-                        //System.out.println("Use PTR = " + ptr);
-                        if(simComputer1.isReadyFlag() && simComputer2.isReadyFlag()){
-                            simComputer1.executeUseInstruction(Integer.valueOf(ptr));    //Se deben convertir ambos valores de Strings a enteros
-                            //simComputer2.executeUseInstruction(Integer.valueOf(ptr));
+   
+        res = st.split("[\\\\()]");                     //Quita los paréntesis de la instrucción                
+        String instruction = res[0];
+
+        switch(instruction){
+            case "new":
+                //System.out.println("Ejecutar instrucción New");
+                //System.out.println("Entra:"+ res[1]);
+                if(res[1].contains(",")){                               //Si parte de la instrucción lleva una ",", quiere decir que es la instrucción "new"
+
+                        String[] splitRes;
+                        splitRes = res[1].split(",");
+                        pid = splitRes[0];                              //Toma el primer número antes del paréntesis (Es decir, el Pid del proceso)                   
+                        size = splitRes[1];                             // Toma el número después de la coma (Es decir el Size en Bytes del proceso)
+
+
+                        //System.out.println("PID:"+ pid);
+                        //System.out.println("Size:"+ size);
+                        if(simComputer1.isReadyFlag() && simComputer2.isReadyFlag()){       
+                            System.out.println("PC--1---###########################################");
+                            simComputer1.executeNewInstruction(Integer.valueOf(pid), Integer.valueOf(size));    //Se deben convertir ambos valores de Strings a enteros
+                            System.out.println("PC--2---###########################################");
+                            simComputer2.executeNewInstruction(Integer.valueOf(pid), Integer.valueOf(size));
                         }
-                        //System.out.println("Ejecutar instrucción Use");
-                        //System.out.println(res[1]);
-                        /*System.out.println("");
-                        System.out.println("TABLA Actual =================");
-                        System.out.println("");
-                        printTableInfo();*/
-                        break;
-                        
-                        
-                    case "delete":
-                        
-                        //System.out.println("Ejecutar instrucción Delete");
-                        //System.out.println(res[1]);
-                        ptr = res[1];
-                        if(simComputer1.isReadyFlag() && simComputer2.isReadyFlag()){
-                            simComputer1.executeDeleteInstruction(Integer.valueOf(ptr));    //Se deben convertir ambos valores de Strings a enteros
-                            //simComputer2.executeDeleteInstruction(Integer.valueOf(ptr));
-                        }
-                        
-                        break;
-                        
-                    case "kill":    
-                        //System.out.println("Ejecutar instrucción Kill");
-                        //System.out.println(res[1]);
-                        pid = res[1]; 
-                        if(simComputer1.isReadyFlag() && simComputer2.isReadyFlag()){
-                            simComputer1.executeKillInstruction(Integer.valueOf(pid));    //Se deben convertir ambos valores de Strings a enteros
-                            //simComputer2.executeKillInstruction(Integer.valueOf(pid));      
-                        }
-                        
-                        break;
                 }     
-                //sleep(2000);
-                return simComputer1.getMemoryTableInfo();
+
+                break;
+
+            case "use":
+
+                ptr = res[1];
+                //System.out.println("Use PTR = " + ptr);
+
+                if(simComputer1.isReadyFlag() && simComputer2.isReadyFlag()){
+                    System.out.println("PC--1---###########################################");
+                    simComputer1.executeUseInstruction(Integer.valueOf(ptr), premonition);    //Se deben convertir ambos valores de Strings a enteros
+                    System.out.println("PC--2---###########################################");
+                    simComputer2.executeUseInstruction(Integer.valueOf(ptr), premonition);
+                }
+                //System.out.println("Ejecutar instrucción Use");
+                //System.out.println(res[1]);
+                /*System.out.println("");
+                System.out.println("TABLA Actual =================");
+                System.out.println("");
+                printTableInfo();*/
+                break;
+
+
+            case "delete":
+
+                //System.out.println("Ejecutar instrucción Delete");
+                //System.out.println(res[1]);
+                ptr = res[1];
+                if(simComputer1.isReadyFlag() && simComputer2.isReadyFlag()){
+                    System.out.println("PC--1---###########################################");
+                    simComputer1.executeDeleteInstruction(Integer.valueOf(ptr));    //Se deben convertir ambos valores de Strings a enteros
+                     System.out.println("PC--2---###########################################");
+                    simComputer2.executeDeleteInstruction(Integer.valueOf(ptr));
+                }
+
+                break;
+
+            case "kill":    
+                //System.out.println("Ejecutar instrucción Kill");
+                //System.out.println(res[1]);
+                pid = res[1]; 
+                if(simComputer1.isReadyFlag() && simComputer2.isReadyFlag()){
+                     System.out.println("PC--1---###########################################");
+                    simComputer1.executeKillInstruction(Integer.valueOf(pid));    //Se deben convertir ambos valores de Strings a enteros
+                     System.out.println("PC--2---###########################################");
+                    simComputer2.executeKillInstruction(Integer.valueOf(pid));      
+                }
+
+                break;
         }
+
+        //sleep(2000);
+        //simComputer2.getMemoryTableInfo();
+
+        //result.add(simComputer1.getMemoryTableInfo());
+       // result.add(simComputer2.getMemoryTableInfo());
+
+        return simComputer1.getMemoryTableInfo();
+    }
     /*System.out.println("");
     System.out.println("TABLA FINAL =================");
     System.out.println("");*/

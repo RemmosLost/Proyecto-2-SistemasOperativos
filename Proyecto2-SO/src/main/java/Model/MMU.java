@@ -20,6 +20,7 @@ public class MMU {
     private SymbolTable symbolTable;                        //Guarda punteros y su lista de páginas          
     private Map<Integer, ArrayList<Integer>> memoryMap;     //Guarda Procesos y su lista de punteros
     
+    
     private double VRAM_KB;
     private double RAM;
     
@@ -44,9 +45,11 @@ public class MMU {
         this.firstOut = 0;
         this.mostRecent = -1;
         this.realMemory2 = new Integer[25];            //Nota, cambiar tamaño de memoria Real devuelta a 100! También se deben cambiar iteradores del arreglo y limite de parametro firstout
-        Arrays.fill(realMemory2, -1);               //Se inicializan los valroes de la memoria real en -1
-   
+        Arrays.fill(realMemory2, -1);               //Se inicializan los valroes de la memoria real en -1  
     }
+    
+    
+    
 
    /*Hacer Getters y Setters****   */
     
@@ -176,15 +179,7 @@ public class MMU {
     
     
     
-    public void premonition(){
-        //New para ver qué páginas se van a hacer
-        
-        //Use para ver en qué orden van a llegar
-        
-        
-        
-    }
-    
+
     
     
     /////
@@ -201,8 +196,7 @@ public class MMU {
         */
           
         int amountPages = (int) size / (4 * 1024);                          //Se calcula la cantidad de páginas que requiere
-        this.VRAM_KB += size/ 1024;
-        
+        this.VRAM_KB += size/ 1024;     
         this.RAM += size / 1024;
         
         //Se calcula la cantidad de páginas que requiere
@@ -251,7 +245,7 @@ public class MMU {
     
     
     
-    public void useInstruction(int ptr){
+    public void useInstruction(int ptr, ArrayList<Integer> premonition){
         /*Función que asigna las páginas de un puntero a memoria real .
         Entradas: ptr = puntero de páginas.
         Salidas: N/A
@@ -265,54 +259,55 @@ public class MMU {
         
         
         switch(this.alg){
-                /* case 0: //Algoritmo Óptimo 
+                case 0: //Algoritmo Óptimo 
                     System.out.println("USE Optimo");
                     for(Integer page: pages){                   //A cada página de la lista de páginas...
+                       System.out.println("USE Optimo Aqui voy 1");
                        boolean found = false;            
-                       System.out.println(pages.get(page));
-                       for(int i = 0; i < 100; i++){             //Caso 1: Se le busca si está en memoria Real
-                           if(realMemory2[i] == page){
-                               hits++;
-                               //CLock +1
-                               found = true;                    //Si la encuentra, es un hit de página, Nota: asignar tiempo de reloj +1
-                               break; 
-                           }
-                       }
-                       
-                       if(found)                                  //Si se encuentra, se siguen buscando si las demás páginas están
+                        //System.out.println(pages.get(page));
+                        found = searchIfItsPageHit(page);            //Caso1: Busca si ya está en Memoria Real
+                        this.clock += 1;
+                        if(found)                                    //Si se encuentra, se siguen buscando si las demás páginas están
                           continue;
-   
-                    
-                    
-                       //Si no estaban en memoria, entonces hay que agregarlas en un espacio que esté "vacío"
-                       
-                       boolean emptyFrame = false;    
-                       for(int i = 0; i < 100; i++){               //Caso 2: Se busca por toda memoria Real si hay un espacio vacío, ie, -1
-                            if(realMemory2[i] == -1){             //Si el campo está vacio  
-                                realMemory2[i] = page;            //Se agrega la página al espacio vacío
-                                //Cambiar estado de Dirección Física de la página actual
-                                //CLock +1 o Clock +5?
-                                emptyFrame = true;
-                            }
-                        }
-                       
-                       if(emptyFrame)
+                        
+                        System.out.println("USE Optimo Aqui voy 2");
+                        boolean emptyFrame = false;    
+                        emptyFrame = searchIfThereIsSpace(page);    //Caso 2: Busca si hay espacio libre en memoria    
+                        this.clock += 1; 
+                        if(emptyFrame)
                            continue;
                        
-                                                                   
-                       int farthest = -1;                       
-                       int replaceIndex = 1;
-                       for(int j = 0; j <100; j++){               //Caso 3: Se debe reemplazar una página
-                           int k;                                //Guarda la página que menos se va a usar en el tiempo (incluido futuro)
-                           for(k = page + 1; k < pageListSize ;k++){        //Busca qué página reemplazar
-                               if(realMemory2[j] = pages.indexOf(k)){
-                                   PREGUNTAR AL PROFE!!!!!
-                               }
-                           }
-                       }      
-                    }
+                        System.out.println("USE Optimo Aqui voy 3");                                            
+                        int farthest = -1;                       
+                        int replaceIndex = 1;
+                        /*for(int j = 0; j < 25; j++){
+                            int k;
+                            for(k = page + 1; k < 25; k++){
+                                if(this.realMemory2[j] == premonition.get(k)){
+                                    if(k > farthest ){
+                                        farthest = k;
+                                        replaceIndex = j;
+                                    }
+                                    break;
+                                 }
+                             }
+                             if(k == premonition.size()){
+                                 replaceIndex = j;
+                                 break;
+                             }
+                            System.out.println("USE Optimo Aqui voy 4");
+                            this.realMemory2[replaceIndex] = j;
+                            this.clock += 5;
+                            Page actualPage = searchPageinPageListByID(page);
+                            actualPage.setPhyAdress(this.firstOut);     //Asigna a la página su dirección en memoria RAM 
+                            actualPage.setTimeStamp(this.clock);
+                            this.firstOut++; 
+                            this.faults++;   
+                            break;
+                         }*/
+                      }
                    
-                    break; */
+                    break;
             
                 case 1: //FIFO
                     
@@ -437,7 +432,11 @@ if(this.firstOut == 25){
                           continue;
                         
                         boolean emptyFrame = false;    
+<<<<<<< Updated upstream
                         //this.clock += 1;
+=======
+                        this.clock += 1;
+>>>>>>> Stashed changes
                         emptyFrame = searchIfThereIsSpace(page);    //Caso 2: Busca si hay espacio libre en memoria    
                         if(emptyFrame)
                            continue;
@@ -471,14 +470,22 @@ if(this.firstOut == 25){
                         boolean found = false;            
                         //System.out.println(pages.get(page));
                         found = searchIfItsPageHit(page);            //Caso1: Busca si ya está en Memoria Real
+<<<<<<< Updated upstream
                         //this.clock += 1;
+=======
+                        this.clock += 1;
+>>>>>>> Stashed changes
                         
                         if(found)                                    //Si se encuentra, se siguen buscando si las demás páginas están
                           continue;
                         
                         boolean emptyFrame = false;    
                         emptyFrame = searchIfThereIsSpace(page);    //Caso 2: Busca si hay espacio libre en memoria    
+<<<<<<< Updated upstream
                         //this.clock += 1;
+=======
+                        this.clock += 1;
+>>>>>>> Stashed changes
                         if(emptyFrame)
                            continue;
                         
@@ -596,7 +603,7 @@ if(this.firstOut == 25){
         for(int i = 0; i < 25; i++){             //Caso 1: Se le busca si está en memoria Real
             if(this.realMemory2[i] == p){
                 this.hits++;
-                this.clock += 1;
+                
                 found = true;                    //Si la encuentra, es un hit de página, Nota: asignar tiempo de reloj +1
                 this.mostRecent = p;
                 System.out.println("Es un HIT!!!");          
@@ -649,6 +656,9 @@ if(this.firstOut == 25){
             if(this.realMemory2[i] == -1){               //Si el campo está vacio  
                 this.realMemory2[i] = p;              //Se agrega la página al espacio vacío
                 //Cambiar estado de Dirección Física de la página actual
+                Page actualPage = searchPageinPageListByID(p);
+                actualPage.setTimeStamp(this.clock);
+                actualPage.setPhyAdress(i);
                 this.clock += 1; 
                 //this.firstOut++;
                 this.mostRecent = p;
