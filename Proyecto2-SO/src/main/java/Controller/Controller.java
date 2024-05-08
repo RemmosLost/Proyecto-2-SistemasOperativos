@@ -273,7 +273,27 @@ public class Controller {
         return res;
     }
     
+    public String[] getAmountProcesses2(){
+        String[] res = new String[1];
+        res[0] = String.valueOf(simComputer2.getMemory().totalProcesses());
+        
+        return res;
+    }
     
+    
+    public String[] getAmountThrashing2(){
+        String[] res = new String[1];
+        res[0] = String.valueOf(simComputer2.getMemory().getThrashingTime()) + "s";
+        
+        return res;
+    }
+    
+    public String[] getVRAM2(){
+        String[] res = new String[1];
+        res[0] = String.valueOf(simComputer2.getMemory().getVRAM_KB()) + "KB";
+        
+        return res;
+    }
     
     
     

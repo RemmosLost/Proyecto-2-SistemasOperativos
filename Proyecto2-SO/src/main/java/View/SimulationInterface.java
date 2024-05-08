@@ -517,12 +517,12 @@ public class SimulationInterface extends javax.swing.JFrame {
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
-                .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
-                        .addGap(18, 18, 18)
+                        .addGap(10, 10, 10)
                         .addComponent(PAGES_OPT_LBL))
                     .addGroup(SIMULATION_PANELLayout.createSequentialGroup()
                         .addGap(18, 18, 18)
@@ -537,9 +537,9 @@ public class SimulationInterface extends javax.swing.JFrame {
                             .addComponent(PAUSE_SIMULATION_BTN)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, SIMULATION_PANELLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 53, Short.MAX_VALUE)
+                            .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -591,11 +591,23 @@ public class SimulationInterface extends javax.swing.JFrame {
         modelo4.addColumn("RAM %");
         modelo4.addColumn("VRAM KB");
         modelo4.addColumn("VRAM %");
-        
-        
         RAM_ALG_TBL.setModel(modelo4);
         
+        DefaultTableModel modeloPROCESSES_OPT = new DefaultTableModel();
+        modeloPROCESSES_OPT.addColumn("PROCESSES");
+        modeloPROCESSES_OPT.addColumn("SIM TIME");
+        PROCESSES_OPT_TBL.setModel(modeloPROCESSES_OPT);
         
+        DefaultTableModel modeloTRASHING_OPT = new DefaultTableModel();
+        modelo3.addColumn("THRASHING");
+        TRASHING_OPT_TBL.setModel(modeloTRASHING_OPT);
+        
+        DefaultTableModel modeloRAM_OPT = new DefaultTableModel();
+        modeloRAM_OPT.addColumn("RAM KB");
+        modeloRAM_OPT.addColumn("RAM %");
+        modeloRAM_OPT.addColumn("VRAM KB");
+        modeloRAM_OPT.addColumn("VRAM %");
+        RAM_OPT_TBL.setModel(modeloRAM_OPT);
         
         
         ///////
@@ -645,6 +657,15 @@ public class SimulationInterface extends javax.swing.JFrame {
         
         TableUpdateWorker worker4 = new TableUpdateWorker(modelo4, RAM_ALG_TBL, this.c.getVRAM());
         worker4.execute();
+        
+        TableUpdateWorker workerPROCESSES_OPT = new TableUpdateWorker(modeloPROCESSES_OPT, PROCESSES_OPT_TBL, this.c.getAmountProcesses2());
+        workerPROCESSES_OPT.execute();
+        
+        TableUpdateWorker workerTRASHING_OPT = new TableUpdateWorker(modeloTRASHING_OPT, TRASHING_OPT_TBL, this.c.getAmountThrashing2());
+        workerTRASHING_OPT.execute();
+        
+        TableUpdateWorker workerRAM_OPT = new TableUpdateWorker(modeloRAM_OPT, RAM_OPT_TBL, this.c.getVRAM2());
+        workerRAM_OPT.execute();
         
         FileReadWorker worker = new FileReadWorker(this.path, modelo, c); // Pasar la instancia de Controller como parámetro
         worker.execute();
