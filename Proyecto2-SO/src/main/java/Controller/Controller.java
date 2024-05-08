@@ -169,61 +169,6 @@ public class Controller {
        
     }
     
-    /*public static void generateOperationsFile(long randomSeed, String algorithm, int numProcesses, int numOperations, String fileName) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            //writer.write("RandomSeed: " + randomSeed);
-            //writer.newLine();
-            //writer.write("Algorithm: " + algorithm);
-            //writer.newLine();
-            //writer.write("NumProcesses: " + numProcesses);
-            //writer.newLine();
-            //writer.write("NumOperations: " + numOperations);
-            //writer.newLine();
-            // Inicializar el generador de números aleatorios con la semilla proporcionada
-            random = new Random(randomSeed);
-            // Generar las operaciones aleatorias y escribirlas en el archivo
-            for (int i = 0; i < numOperations; i++) {
-                String operation = generateRandomOperation(numProcesses);
-                writer.write(operation);
-                writer.newLine();
-            }
-
-        } catch (IOException e) {
-            System.err.println("Error al generar el archivo de operaciones: " + e.getMessage());
-        }
-    }*/
-
-    /*
-    public static void readInstructions(String fileName) {
-        try (Scanner scanner = new Scanner(fileName)) {
-            while (scanner.hasNextLine()) {
-                String instruction = scanner.nextLine();
-                System.out.println("Procesando instrucción: " + instruction);
-            }
-        }    
-    }
-
-    public static String generateRandomOperation(int numProcesses) {
-        int processId = random.nextInt(numProcesses) + 1;
-        int operationCode = random.nextInt(100) + 1;
-        String operation;
-        if (operationCode <= 30) {
-            operation = "new(" + processId + ", " + generateRandomSize() + ")";
-        } else if (operationCode <= 60) {
-            operation = "use(" + processId + ")";
-        } else if (operationCode <= 90) {
-            operation = "delete(" + processId + ")";
-        } else {
-            operation = "kill(" + processId + ")";
-        }
-        return operation;
-    }
-
-    public static int generateRandomSize() {
-        return random.nextInt(901) + 100;
-    }
-*/
-    
     public static void generateRandomInstructions(int amountProcesses, int amountOps, int pSeed){ //
         long seed = pSeed;
         Random rand = new Random(seed);    
@@ -306,32 +251,40 @@ public class Controller {
     System.out.println(generatedInstructions);    
     }
     
+    public String[] getAmountProcesses(){
+        String[] res = new String[1];
+        res[0] = String.valueOf(simComputer1.getMemory().totalProcesses());
+        
+        return res;
+    }
+    
+    
+    public String[] getAmountThrashing(){
+        String[] res = new String[1];
+        res[0] = String.valueOf(simComputer1.getMemory().getThrashingTime()) + "s";
+        
+        return res;
+    }
+    
+    public String[] getVRAM(){
+        String[] res = new String[1];
+        res[0] = String.valueOf(simComputer1.getMemory().getVRAM_KB()) + "KB";
+        
+        return res;
+    }
+    
+    
+    
+    
+    
+    
     
     public static void main(String[] args) throws IOException {       
         //readInstructions();
         //simComputer1.printMemoryMap();      
         //simComputer1.printSymbolTable();
         //simComputer1.printRealMemory();
-        
-        /*Scanner scanner = new Scanner(System.in);
-        System.out.println("Ingrese la semilla para random:");
-        //Scanner scanner = new Scanner(System.in);
-        /*System.out.println("Ingrese la semilla para random:");
-        long randomSeed = scanner.nextLong();
-        System.out.println("Ingrese el algoritmo a simular (FIFO, SC, MRU, RND):");
-        String algorithm = scanner.next();
-        System.out.println("Ingrese el número de procesos a simular (10, 50, 100):");
-        int numProcesses = scanner.nextInt();
-        System.out.println("Ingrese la cantidad de operaciones (500, 1000, 5000):");
-        int numOperations = scanner.nextInt();
-        System.out.println("Ingrese el nombre del archivo para guardar las operaciones:");
-        String fileName = scanner.next();
-        generateOperationsFile(randomSeed, algorithm, numProcesses, numOperations, fileName);
-        System.out.println("El archivo de operaciones ha sido generado exitosamente: " + fileName);
-        SimulationInterface simulation = new SimulationInterface();
-        simulation.setVisible(true);
-        simulation.setLocationRelativeTo(null);*/
-        
+       
         //generateRandomInstructions(10,200,1); /**/
         
         //readInstructions();

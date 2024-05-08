@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import static java.lang.Thread.sleep;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.filechooser.*;
@@ -512,10 +513,10 @@ public class SimulationInterface extends javax.swing.JFrame {
                     .addComponent(jScrollPane1)
                     .addComponent(jScrollPane2))
                 .addGap(20, 20, 20)
-                .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(32, 32, 32)
+                .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
                 .addGroup(SIMULATION_PANELLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -572,62 +573,82 @@ public class SimulationInterface extends javax.swing.JFrame {
         int pidColumnIndex = 1; // Índice de la columna "PID" en el modelo
         MMU_ALGORITMO_TBL.setDefaultRenderer(Object.class, new CustomTableCellRenderer(pidColumnIndex));
 
-        FileReadWorker worker = new FileReadWorker(this.path, modelo, c); // Pasar la instancia de Controller como parámetro
-        worker.execute();
+        
 
+        DefaultTableModel modelo2 = new DefaultTableModel();
+        modelo2.addColumn("PROCESSES");
+        modelo2.addColumn("SIM TIME");
+        PROCESSES_ALG_TBL.setModel(modelo2);
+        
+        
+        DefaultTableModel modelo3 = new DefaultTableModel();
+        modelo3.addColumn("THRASHING");
+        
+        TRASHING_ALG_TBL.setModel(modelo3);
+        
+        DefaultTableModel modelo4 = new DefaultTableModel();
+        modelo4.addColumn("RAM KB");
+        modelo4.addColumn("RAM %");
+        modelo4.addColumn("VRAM KB");
+        modelo4.addColumn("VRAM %");
+        
+        
+        RAM_ALG_TBL.setModel(modelo4);
         
         
         
         
+        ///////
         
+        File file = new File(this.path);
+        ArrayList<String[]> memoryRows = null;
+        Object[] objectArray = null;
         
-        /*c = new Controller();
-        int alg = algorithm_ComboBox.getSelectedIndex() + 1;
-        c.startComputers(alg);
-
         try {
-            File file = new File(this.path);
             BufferedReader br = new BufferedReader(new FileReader(file));
             String st;
-
             String pid = "";
             String size = "";
             String ptr = "";
-            String[] res;
-
-            while ((st = br.readLine()) != null && c.isPaused() != false) {
-                ArrayList<String[]> memoryRows = c.readInstructions(st);
-
-                DefaultTableModel modelo = new DefaultTableModel();
-                modelo.addColumn("Page Id");
-                modelo.addColumn("PID");
-                modelo.addColumn("LOADED");
-                modelo.addColumn("L-ADDR");
-                modelo.addColumn("M-ADDR");
-                modelo.addColumn("LOADED-T");
-                modelo.addColumn("MARK");
-
-                for (String[] rows : memoryRows) {
-                    modelo.addRow(rows);
-
-                    MMU_ALGORITMO_TBL.setModel(modelo);
-
-                    // Configurar el renderizador personalizado para la columna "PID" (suponiendo que es la columna 1)
-                    int pidColumnIndex = 1; // Índice de la columna "PID" en el modelo
-                    MMU_ALGORITMO_TBL.setDefaultRenderer(Object.class, new CustomTableCellRenderer(pidColumnIndex));
-                    
-                    
-                    //MMU_OPTIMO_TBL.setModel(modelo);                  
-                    //MMU_OPTIMO_TBL.setDefaultRenderer(Object.class, new CustomTableCellRenderer(pidColumnIndex));
-                }
-                sleep(1000);
+            String[] res;         
+            while ((st = br.readLine()) != null && this.c.isPaused() != false) {
+                memoryRows = this.c.readInstructions(st);
+            }
+     
+            List<Object[]> objectList = new ArrayList<>();
+            
+            for (String[] strings: memoryRows) {
+                objectArray = new Object[strings.length];
+            for (int i = 0; i < strings.length; i++) {
+                objectArray[i] = strings[i]; // Asignar cada String al correspondiente índice en Object[]
+            }
+            objectList.add(objectArray); // Agregar el Object[] convertido a la lista de objetos
             }
 
-            // Otras operaciones
-
-        } catch (IOException | InterruptedException ex) {
+        } catch (FileNotFoundException ex) {
             Logger.getLogger(SimulationInterface.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
+        } catch (IOException ex) {
+            Logger.getLogger(SimulationInterface.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SimulationInterface.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+
+        /*TableUpdateWorker worker1 = new TableUpdateWorker(modelo, MMU_ALGORITMO_TBL, objectArray);
+        worker1.execute();*/
+        
+        TableUpdateWorker worker2 = new TableUpdateWorker(modelo2, MMU_OPTIMO_TBL, this.c.getAmountProcesses());
+        worker2.execute();
+        
+        TableUpdateWorker worker3 = new TableUpdateWorker(modelo3, TRASHING_ALG_TBL, this.c.getAmountThrashing());
+        worker3.execute();
+        
+        TableUpdateWorker worker4 = new TableUpdateWorker(modelo4, RAM_ALG_TBL, this.c.getVRAM());
+        worker4.execute();
+        
+        FileReadWorker worker = new FileReadWorker(this.path, modelo, c); // Pasar la instancia de Controller como parámetro
+        worker.execute();
+
     }//GEN-LAST:event_PLAY_SIMULATION_BTNActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed

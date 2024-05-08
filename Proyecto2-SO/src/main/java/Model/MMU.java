@@ -49,6 +49,8 @@ public class MMU {
     }
 
    /*Hacer Getters y Setters****   */
+    
+    
 
     public int getAlg() {
         return alg;
@@ -145,6 +147,31 @@ public class MMU {
     public void setClock(int clock) {
         this.clock = clock;
     }
+
+    public double getVRAM_KB() {
+        return VRAM_KB;
+    }
+
+    public void setVRAM_KB(double VRAM_KB) {
+        this.VRAM_KB = VRAM_KB;
+    }
+
+    public int getHits() {
+        return hits;
+    }
+
+    public void setHits(int hits) {
+        this.hits = hits;
+    }
+
+    public int getFaults() {
+        return faults;
+    }
+
+    public void setFaults(int faults) {
+        this.faults = faults;
+    }
+    
     
     
     
@@ -303,12 +330,13 @@ public class MMU {
                         boolean found = false;            
                         //System.out.println(pages.get(page));
                         found = searchIfItsPageHit(page);            //Caso1: Busca si ya está en Memoria Real
-                        
+                        this.clock += 1;
                         if(found)                                    //Si se encuentra, se siguen buscando si las demás páginas están
                           continue;
                         
                         boolean emptyFrame = false;    
                         emptyFrame = searchIfThereIsSpace(page);    //Caso 2: Busca si hay espacio libre en memoria    
+                        this.clock += 1; 
                         if(emptyFrame)
                            continue;
                         
@@ -322,7 +350,6 @@ public class MMU {
                         this.faults++;                              //Aumenta cantidad de fallos de página
                         
                         
-                        
                         System.out.println("GOKU+" + this.firstOut);
                         //printRealMemory2();
      
@@ -332,8 +359,7 @@ public class MMU {
                 case 2: //Second Chance
                     System.out.println("-----SECOND CHANCE SELECCIONADO-----");
                     for(Integer page: pages){
-
-                        if(this.firstOut == 25){                       
+if(this.firstOut == 25){                       
                             this.firstOut = 0;
                         }
 
@@ -344,17 +370,19 @@ public class MMU {
                         boolean found = false;            
                         //System.out.println(pages.get(page));
                         found = searchIfItsPageHit_SC(page,ptr);            //Caso1: Busca si ya está en Memoria Real
-
+                        this.clock += 1;
                         if(found)                                    //Si se encuentra, se siguen buscando si las demás páginas están
                           continue;
 
                         boolean emptyFrame = false;    
                         emptyFrame = searchIfThereIsSpace(page);    //Caso 2: Busca si hay espacio libre en memoria    
+                        this.clock += 1;
                         if(emptyFrame)
                            continue;
                                
+                        
                         //realMemory2[this.firstOut] = page;          //Caso 3: Reemplezar una página de acuerdo a cuál fue la primera página que entró
-                                                    //Aumenta cantidad de fallos de página
+                                                                        //Aumenta cantidad de fallos de página
                         Page actualPage = searchPageinPageListByID(page);                            
                         for(Page pg: this.pages){                   //Itera toda la lista de páginas existentes
                             //System.out.println("+*+*+*+*+* PAGE = " + page + " PageID = " + pg.getPageID());
@@ -396,7 +424,6 @@ public class MMU {
                 case 3: //MRU (Most Recent Used)
                     System.out.println("-----MRU SELECCIONADO-----");
                     for(Integer page: pages){
-                        
                         System.out.println(">>>>Memoria Actual>>>>   MRU = " + this.mostRecent);
                         printRealMemory2();
                         System.out.println("<<<<Memoria Actual<<<<");
@@ -404,12 +431,13 @@ public class MMU {
                         boolean found = false;            
                         //System.out.println(pages.get(page));
                         found = searchIfItsPageHit(page);            //Caso1: Busca si ya está en Memoria Real
-                        
+                        this.clock += 1;
                         
                         if(found)                                    //Si se encuentra, se siguen buscando si las demás páginas están
                           continue;
                         
                         boolean emptyFrame = false;    
+                        //this.clock += 1;
                         emptyFrame = searchIfThereIsSpace(page);    //Caso 2: Busca si hay espacio libre en memoria    
                         if(emptyFrame)
                            continue;
@@ -443,12 +471,14 @@ public class MMU {
                         boolean found = false;            
                         //System.out.println(pages.get(page));
                         found = searchIfItsPageHit(page);            //Caso1: Busca si ya está en Memoria Real
-
+                        //this.clock += 1;
+                        
                         if(found)                                    //Si se encuentra, se siguen buscando si las demás páginas están
                           continue;
                         
                         boolean emptyFrame = false;    
                         emptyFrame = searchIfThereIsSpace(page);    //Caso 2: Busca si hay espacio libre en memoria    
+                        //this.clock += 1;
                         if(emptyFrame)
                            continue;
                         
