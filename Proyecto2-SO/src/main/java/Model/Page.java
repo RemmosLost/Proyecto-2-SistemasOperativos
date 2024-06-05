@@ -2,12 +2,13 @@ package Model;
 
 
 public class Page {
-    //private static int global = 0;  
-    private static int pId = 0;
+    private static int pId = 0;   
     private int pageID;
     private int phyAdress;                  //Marco de memoria que se le asignó
     private boolean flag;
     private int timeStamp;
+    
+    
     
     //Marking
     private boolean recent;
@@ -15,7 +16,6 @@ public class Page {
     
 
     public Page() {
-        
         this.pageID = pId;
         this.phyAdress = -1;                //Indica que empieza estando em memoria virtual VRAM
         pId++;

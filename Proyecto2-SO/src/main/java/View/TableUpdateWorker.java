@@ -25,9 +25,10 @@ public class TableUpdateWorker extends SwingWorker<Void, Object[]> {
     }*/
     
     
-
+    //PRUEBAAAAAAAAAAAAAAAAAAAAA
     @Override
     protected Void doInBackground() throws Exception {
+        tableModel.setRowCount(0);
         // Simulación de datos para actualizar la tabla
         for (Object o: data) {
             Object[] rowData = this.data; // Datos de ejemplo

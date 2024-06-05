@@ -55,33 +55,33 @@ public class Computer {
     
     public void executeNewInstruction(int pid, int size){
         this.readyFlag = false;
-        this.memory.newInstruction(pid, size);
+        memory.newInstruction(pid, size);
         this.readyFlag = true;
-        getMemoryTableInfo();
-        System.out.println("Tabla actual");
+        //getMemoryTableInfo();
+        /*System.out.println("Tabla actual");
         ArrayList<String[]> rows = getMemoryTableInfo();
         for(String[] arr: rows ){
             System.out.println(arr[0] + ", " + arr[1] + ", " + arr[2] + ", " + arr[3] + ", " + arr[4] + ", " + arr[5] + ", " + arr[6]);
             System.out.println("");
-        }
+        }*/
     }
-    
-    public void executeUseInstruction(int ptr, ArrayList<Integer> premonition){
+     //PRUEBAAAAAAAAAAAAAAAAAAAAA
+    public void executeUseInstruction(int ptr){
          this.readyFlag = false;
-         this.memory.useInstruction(ptr, premonition);
+         memory.useInstruction(ptr);
          this.readyFlag = true;
          //getMemoryTableInfo();
-         System.out.println("Tabla actual");
+         /*System.out.println("Tabla actual");
         ArrayList<String[]> rows = getMemoryTableInfo();
         for(String[] arr: rows ){
             System.out.println(arr[0] + ", " + arr[1] + ", " + arr[2] + ", " + arr[3] + ", " + arr[4] + ", " + arr[5] + ", " + arr[6]);
             System.out.println("");
-        }
+        }*/
     }
     
     public void executeDeleteInstruction(int ptr){
          this.readyFlag = false;
-         this.memory.deleteInstruction(ptr);
+         memory.deleteInstruction(ptr);
          this.readyFlag = true;
          //getMemoryTableInfo();
         /*System.out.println("Tabla actual");
@@ -94,7 +94,7 @@ public class Computer {
     
     public void executeKillInstruction(int pid){
          this.readyFlag = false;
-         this.memory.killInstruction(pid);
+         memory.killInstruction(pid);
          
          this.readyFlag = true;
          //getMemoryTableInfo();
@@ -107,11 +107,11 @@ public class Computer {
     }
     
     public void printSymbolTable(){
-         this.memory.printSymbolTable(); 
+         memory.printSymbolTable(); 
     }
     
     public void printMemoryMap(){
-        this.memory.printMemoryMap();
+    memory.printMemoryMap();
     }
     
     public void printRealMemory(){
